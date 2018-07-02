@@ -7,7 +7,8 @@ router.get("/", function (req, res) {
 });
 
 router.post("/", function (req, res) {
-    console.log(req);
+    res.send(req);
+    return
     let dataString = '{ "query":`${res}`, "docType":"digipolis" }';
 
     let options = {
