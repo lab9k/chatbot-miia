@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const request = require("request");
+const dialogFlowFormatter = require("../util/dialogFlowFormatter");
 
 /**
  * Routes HTTP POST requests to root
@@ -8,8 +9,7 @@ const request = require("request");
  */
 router.post("/", function (req, res) {
     let body = req.body;
-    console.log(body.responseId);
-    console.log(body.session);
+    console.log(body);
     let dataString = `{ "query":"${body.queryResult.queryText}", "docType":"digipolis" }`;
 
     let options = {
@@ -28,9 +28,10 @@ router.post("/", function (req, res) {
 
     function callback(error, response, body) {
         if (!error && response.statusCode === 200) {
-            res.send(body);
+            let dialogFlowResponse = dialogFlowFormatter(body);
+            res.send(dialogFlowResponse);
         } else {
-            res.send("Nothing!")
+            res.send(dialogFlowFormatter({}))
         }
     }
 
