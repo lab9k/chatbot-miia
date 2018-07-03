@@ -18,6 +18,21 @@ module.exports = function (miiaResponse) {
     // Dialogflow format https://dialogflow.com/docs/fulfillment
     return {
         fulfillmentText: response,
+        fulfillmentMessages: [
+            {
+                card: {
+                    title: "card title",
+                    subtitle: "card text",
+                    imageUri: "https://assistant.google.com/static/images/molecule/Molecule-Formation-stop.png",
+                    buttons: [
+                        {
+                            text: "button text",
+                            postback: "https://assistant.google.com/"
+                        }
+                    ]
+                }
+            }
+        ],
         source: "http://miia-chatbot-gent.herokuapp.com",
         payload: {
              facebook: {
