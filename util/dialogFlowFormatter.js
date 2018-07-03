@@ -13,12 +13,7 @@ module.exports = function (response) {
             console.log(`Content: ${miiaResponse(currentResponse).replace(/^\n/, "")}`
                 + `\nscore = ${currentResponse.score}`);
             if (cards.length < 9) {
-                let uri;
-                if (currentResponse.hasOwnProperty("docUri") && response.docUri !== null)
-                    uri = currentResponse.docUri;
-                else
-                    uri = "";
-                cards.push(card(miiaResponse(currentResponse).substring(0, 80), "datum", uri))
+                cards.push(card(miiaResponse(currentResponse).substring(0, 80), "datum", response.docUri))
             }
         }
         // for web demo (Take the first respond(highest score)))

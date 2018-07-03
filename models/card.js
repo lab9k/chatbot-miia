@@ -1,5 +1,5 @@
 module.exports = function (title, subtitle, url) {
-    if (url.length !== 0)
+    if (url !== undefined && url !== null) {
         return {
             title: title,
             subtitle: subtitle,
@@ -11,9 +11,11 @@ module.exports = function (title, subtitle, url) {
                 }
             ]
         };
-    else
+    }
+    else {
         return {
             title: title,
             subtitle: subtitle
         }
+    }
 };
