@@ -1,5 +1,6 @@
 module.exports = function (miiaResponse) {
     let response;
+    miiaResponse = JSON.parse(miiaResponse);
     if (miiaResponse.hasOwnProperty("documents") && miiaResponse.documents !== null) {
         miiaResponse = miiaResponse.documents[0]; // Take the first respond(highest score)
         if (miiaResponse.hasOwnProperty("summary") && miiaResponse.summary !== null) {
