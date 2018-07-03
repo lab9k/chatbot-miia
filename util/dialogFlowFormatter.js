@@ -13,7 +13,7 @@ module.exports = function (response) {
             console.log(`Content: ${miiaResponse(document).replace(/^\n/, "")}`
                 + `\nscore = ${document.score}`);
             if (cards.length < 9) {
-                if (document.matchingConcepts.length > 0) {
+                if (document.matchingConcepts !== null && document.matchingConcepts.length > 0) {
                     let date = new Date(document.publicationDate);
                     cards.push(card(miiaResponse(document).substring(0, 80),
                         `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
