@@ -15,7 +15,7 @@ module.exports = function (response) {
             if (cards.length < 9) {
                 if (document.matchingConcepts !== null && document.matchingConcepts.length > 0) {
                     let date = new Date(document.publicationDate);
-                    cards.push(card(miiaResponse(document).substring(0, 80),
+                    cards.push(card(miiaResponse(document),
                         `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
                         document.docUri));
                 }
