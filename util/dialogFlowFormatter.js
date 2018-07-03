@@ -12,7 +12,12 @@ module.exports = function (response) {
             let currentResponse = response.documents[i];
             console.log("Content: " + miiaResponse(currentResponse).replace(/^\n/, "") + " score = " + currentResponse.score);
             if (cards.length < 9) {
-                cards.push(card("iets", "iets", "https://lab9k.gent"))
+                let uri;
+                if (currentResponse.hasOwnProperty("docUri") && response.docUri !== null)
+                    uri = currentResponse.docUri;
+                else
+                    uri = "";
+                cards.push(card(miiaResponse(currentResponse).substring(0, 80), "datum", uri))
             }
         }
         // for web demo (Take the first respond(highest score)))
