@@ -8,10 +8,12 @@ module.exports = function (response) {
     let cards = [];
     if (response.hasOwnProperty("documents") && response.documents !== null) {
         // generate list for facebook cards
-        for (let i = 0; i < response.documents.length && i < 10; i++) {
+        for (let i = 0; i < response.documents.length; i++) {
             let currentResponse = response.documents[i];
-            console.log(currentResponse);
-            cards.push(card("iets", "iets", "https://lab9k.gent"))
+            console.log("Text: " + miiaResponse(currentResponse) + " score = " + currentResponse.score);
+            if (cards.length < 9) {
+                cards.push(card("iets", "iets", "https://lab9k.gent"))
+            }
         }
         // for web demo (Take the first respond(highest score)))
         finalResponse = miiaResponse(response.documents[0])
