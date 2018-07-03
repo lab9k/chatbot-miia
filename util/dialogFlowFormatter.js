@@ -30,8 +30,8 @@ module.exports = function (miiaResponse) {
     return {
         fulfillmentText: response,
         source: "http://miia-chatbot-gent.herokuapp.com",
-        payload: {
-            facebook: facebook(carousel(cards))
-        }
+        // payload: {
+        //     facebook: facebook(carousel(cards))
+        // }
     }
 };
