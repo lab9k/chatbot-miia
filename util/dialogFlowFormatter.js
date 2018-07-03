@@ -24,8 +24,6 @@ module.exports = function (miiaResponse) {
     } else {
         response = "Geen antwoord";
     }
-    let format = JSON.stringify(facebook(carousel(cards)));
-    console.log(format);
     // Dialogflow format https://dialogflow.com/docs/fulfillment
     return {
         fulfillmentText: response,
