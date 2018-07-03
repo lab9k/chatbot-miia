@@ -1,13 +1,12 @@
 const express = require("express");
 const router = express.Router();
 const dialogFlowFormatter = require("../util/dialogFlowFormatter");
-const config = require("../config.json");
 const MiiaAPI = require("../api/MiiaAPI");
 const miiaAPI = new MiiaAPI(
-    config.baseURL,
-    config.username,
-    config.password,
-    config.docType
+    process.env.baseURL,
+    process.env.username,
+    process.env.password,
+    process.env.docType
 );
 
 /**
