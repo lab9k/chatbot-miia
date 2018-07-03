@@ -22,7 +22,11 @@ module.exports = function (response) {
             }
         }
         // for web demo (Take the first respond(highest score)))
-        finalResponse = miiaResponse(response.documents[0])
+        if (cards.length === 0) {
+            finalResponse = "Geen antwoord gevonden";
+        } else {
+            finalResponse = miiaResponse(response.documents[0])
+        }
     } else {
         finalResponse = "Geen antwoord gevonden";
     }
