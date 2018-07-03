@@ -6,10 +6,10 @@ module.exports = function (response) {
     response = JSON.parse(response);
     let finalResponse;
     let cards = [];
-    if (response.hasOwnProperty("documents") && response.documents !== null) {
+    if (response.hasOwnProperty("paragraphs") && response.documents !== null) {
         // generate list for facebook cards
-        for (let i = 0; i < response.documents.length; i++) {
-            let document = response.documents[i];
+        for (let i = 0; i < response.paragraphs.length; i++) {
+            let document = response.paragraphs[i];
             console.log(`Content: ${miiaResponse(document).replace(/^\n/, "")}`
                 + `\nscore = ${document.score}`);
             if (cards.length < 9) {
@@ -25,7 +25,7 @@ module.exports = function (response) {
         if (cards.length === 0) {
             finalResponse = "Geen antwoord gevonden";
         } else {
-            finalResponse = miiaResponse(response.documents[0])
+            finalResponse = miiaResponse(response.paragraphs[0])
         }
     } else {
         finalResponse = "Geen antwoord gevonden";
