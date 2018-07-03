@@ -17,10 +17,10 @@ class MiiaAPI {
                 "Accept": "application/json",
                 "Content-Type": "application/json"
             },
-            body: {
+            body: JSON.stringify({
                 query: query,
                 docType: this.docType
-            },
+            }),
             auth: {
                 user: this.username,
                 pass: this.password
