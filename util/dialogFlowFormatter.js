@@ -8,9 +8,10 @@ module.exports = function (response) {
     let cards = [];
     if (response.hasOwnProperty("documents") && response.documents !== null) {
         // generate list for facebook cards
+        console.log("Request query: " + response.queryRequest);
         for (let i = 0; i < response.documents.length; i++) {
             let currentResponse = response.documents[i];
-            console.log("Text: " + miiaResponse(currentResponse) + " score = " + currentResponse.score);
+            console.log("Content: " + miiaResponse(currentResponse).replace(/^\n/, "") + " score = " + currentResponse.score);
             if (cards.length < 9) {
                 cards.push(card("iets", "iets", "https://lab9k.gent"))
             }
