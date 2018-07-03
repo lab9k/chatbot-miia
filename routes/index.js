@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const dialogFlowFormatter = require("../util/dialogFlowFormatter");
 const config = require("../config.json");
+const MiiaAPI = require("../api/MiiaAPI");
 const miiaAPI = new MiiaAPI(
     config.baseURL,
     config.username,

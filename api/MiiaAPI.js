@@ -28,3 +28,5 @@ class MiiaAPI {
         }, callback);
     }
 }
+
+module.exports = MiiaAPI;
