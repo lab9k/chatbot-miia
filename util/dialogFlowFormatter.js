@@ -17,7 +17,7 @@ module.exports = function (response) {
                     let date = new Date(document.publicationDate);
                     cards.push(card(miiaResponse(document).substring(0, 80),
                         `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
-                        response.docUri));
+                        document.docUri));
                 }
             }
         }
