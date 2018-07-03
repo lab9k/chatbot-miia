@@ -1,5 +1,6 @@
 module.exports = function (response, cards) {
     if (cards.length === 0) {
+        console.log(1);
         return {
             fulfillmentText: response,
             source: "http://miia-chatbot-gent.herokuapp.com",
