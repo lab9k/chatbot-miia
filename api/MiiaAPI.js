@@ -1,3 +1,5 @@
+const request = require("request");
+
 /**
  * Wrapper klasse voor Miia Rest API
  */
