@@ -1,11 +1,7 @@
 module.exports = function (title, subtitle, url) {
     return {
         title: title,
-        "subtitle": subtitle,
-        "default_action": {
-            "type": "web_url",
-            "url": url,
-        },
+        subtitle: subtitle,
         buttons: [
             {
                 type: "web_url",
