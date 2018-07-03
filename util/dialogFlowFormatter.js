@@ -18,7 +18,7 @@ module.exports = function (miiaResponse) {
     // Dialogflow format https://dialogflow.com/docs/fulfillment
     return {
         fulfillmentText: response,
-        /*fulfillmentMessages: [
+        fulfillmentMessages: [
             {
                 card: {
                     title: "card title",
@@ -32,8 +32,8 @@ module.exports = function (miiaResponse) {
                     ]
                 }
             }
-        ],*/
-        source: "example.com",
+        ],
+        source: "http://miia-chatbot-gent.herokuapp.com",
         /* payload: {
              google: {
                  expectUserResponse: true,
