@@ -13,7 +13,8 @@ module.exports = function (response) {
             console.log(`Content: ${miiaResponse(currentResponse).replace(/^\n/, "")}`
                 + `\nscore = ${currentResponse.score}`);
             if (cards.length < 9) {
-                if (!currentResponse.hasOwnProperty(conceptsOfQuery) || currentResponse.conceptsOfQuery.length > 0) {
+                if (!currentResponse.hasOwnProperty(currentResponse.conceptsOfQuery)
+                    || currentResponse.conceptsOfQuery.length > 0) {
                     cards.push(card(miiaResponse(currentResponse).substring(0, 80),
                         `${currentResponse.getDate()}/${currentResponse.getMonth()}/${currentResponse.getFullYear()}`,
                         response.docUri));
