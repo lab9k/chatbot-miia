@@ -2,14 +2,15 @@ const express = require("express");
 const router = express.Router();
 const request = require("request");
 
-router.get("/", function (req, res) {
-    res.send("Miia chatbot");
-});
-
+/**
+ * Routes HTTP POST requests to root
+ * TODO safety check
+ */
 router.post("/", function (req, res) {
-    res.send(req);
-    return
-    let dataString = '{ "query":`${res}`, "docType":"digipolis" }';
+    let body = req.body;
+    console.log(body.responseId);
+    console.log(body.session);
+    let dataString = `{ "query":"${body.queryResult.queryText}", "docType":"digipolis" }`;
 
     let options = {
         url: 'https://gent.digipolis.demo.miia.technology/legal/services/v1/query',
@@ -35,5 +36,7 @@ router.post("/", function (req, res) {
 
     request(options, callback);
 });
+
+// TODO all HTML METHODS(block or accept)
 
 module.exports = router;
