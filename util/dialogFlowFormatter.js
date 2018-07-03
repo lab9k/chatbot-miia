@@ -31,7 +31,7 @@ module.exports = function (miiaResponse) {
         fulfillmentText: response,
         source: "http://miia-chatbot-gent.herokuapp.com",
         payload: {
-            facebook: facebook(carousel(cards))
+            facebook: JSON.stringify(facebook(carousel(cards)))
         }
     }
 };
