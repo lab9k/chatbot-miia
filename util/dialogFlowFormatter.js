@@ -9,14 +9,13 @@ module.exports = function (response) {
     if (response.hasOwnProperty("documents") && response.documents !== null) {
         // generate list for facebook cards
         for (let i = 0; i < response.documents.length; i++) {
-            let currentResponse = response.documents[i];
-            console.log(`Content: ${miiaResponse(currentResponse).replace(/^\n/, "")}`
-                + `\nscore = ${currentResponse.score}`);
+            let document = response.documents[i];
+            console.log(`Content: ${miiaResponse(document).replace(/^\n/, "")}`
+                + `\nscore = ${document.score}`);
             if (cards.length < 9) {
-                if (!currentResponse.hasOwnProperty(currentResponse.conceptsOfQuery)
-                    || currentResponse.conceptsOfQuery.length > 0) {
-                    cards.push(card(miiaResponse(currentResponse).substring(0, 80),
-                        `${currentResponse.getDate()}/${currentResponse.getMonth()}/${currentResponse.getFullYear()}`,
+                if (document.matchingConcepts.length > 0) {
+                    cards.push(card(miiaResponse(document).substring(0, 80),
+                        `${document.getDate()}/${document.getMonth()}/${document.getFullYear()}`,
                         response.docUri));
                 }
             }
