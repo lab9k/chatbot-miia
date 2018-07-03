@@ -1,43 +1,24 @@
 let card = require("../models/card");
+let dialogFlow = require("../models/dialogFlow");
+let miiaResponse = require("../util/miiaResponse");
 
-module.exports = function (miiaResponse) {
-    let response;
-    miiaResponse = JSON.parse(miiaResponse);
+module.exports = function (response) {
+    response = JSON.parse(response);
+    let finalResponse;
     let cards = [];
-    if (miiaResponse.hasOwnProperty("documents") && miiaResponse.documents !== null) {
+    if (response.hasOwnProperty("documents") && response.documents !== null) {
         // generate list for facebook cards
-        for (let i = 0; i < 2; i++) {
+        for (let i = 0; i < response.documents.length && i < 10; i++) {
+            let currentResponse = response.documents[i];
+            console.log(currentResponse);
             cards.push(card("iets", "iets", "https://lab9k.gent"))
         }
         // for web demo (Take the first respond(highest score)))
-        miiaResponse = miiaResponse.documents[0];
-        if (miiaResponse.hasOwnProperty("summary") && miiaResponse.summary !== null) {
-            response = miiaResponse.summary;
-        } else if (miiaResponse.hasOwnProperty("displaySummary") && miiaResponse.displaySummary !== null) {
-            response = miiaResponse.displaySummary;
-        } else if (miiaResponse.hasOwnProperty("content") && miiaResponse.content !== null) {
-            response = miiaResponse.content;
-        } else {
-            response = "Geen antwoord";
-        }
-
+        finalResponse = miiaResponse(response.documents[0])
     } else {
-        response = "Geen antwoord";
+        finalResponse = "Geen antwoord gevonden";
     }
     // Dialogflow format https://dialogflow.com/docs/fulfillment
-    return {
-        fulfillmentText: response,
-        source: "http://miia-chatbot-gent.herokuapp.com",
-        payload: {
-            facebook: {
-                attachment: {
-                    type: 'template',
-                    payload: {
-                        template_type: 'generic',
-                        elements: [card("iets", "iets", "https://lab9k.gent")]
-                    }
-                }
-            }
-        }
-    }
+    return dialogFlow(finalResponse, cards)
 };
+
