@@ -9,7 +9,6 @@ const dialogFlowFormatter = require("../util/dialogFlowFormatter");
  */
 router.post("/", function (req, res) {
     let body = req.body;
-    console.log(body);
     let dataString = `{ "query":"${body.queryResult.queryText}", "docType":"digipolis" }`;
 
     let options = {

@@ -1,11 +1,16 @@
 module.exports = function (miiaResponse) {
     let response;
-    if ("summary" in miiaResponse && miiaResponse.summary !== null) {
-        response = miiaResponse.summary;
-    } else if ("displaySummary" in miiaResponse && miiaResponse.displaySummary !== null) {
-        response = miiaResponse.displaySummary;
-    } else if ("content" in miiaResponse && miiaResponse.content !== null) {
-        response = miiaResponse.content;
+    if (miiaResponse.hasOwnProperty("documents") && miiaResponse.documents !== null) {
+        miiaResponse = miiaResponse.documents[0]; // Take the first respond(highest score)
+        if (miiaResponse.hasOwnProperty("summary") && miiaResponse.summary !== null) {
+            response = miiaResponse.summary;
+        } else if (miiaResponse.hasOwnProperty("displaySummary") && miiaResponse.displaySummary !== null) {
+            response = miiaResponse.displaySummary;
+        } else if (miiaResponse.hasOwnProperty("content") && miiaResponse.content !== null) {
+            response = miiaResponse.content;
+        } else {
+            response = "Geen antwoord";
+        }
     } else {
         response = "Geen antwoord";
     }
