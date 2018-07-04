@@ -10,8 +10,6 @@ module.exports = function (response) {
         // generate list for facebook cards
         for (let i = 0; i < response.paragraphs.length; i++) {
             let paragraph = response.paragraphs[i];
-            console.log(`Content: ${miiaResponse(paragraph).replace(/^\n/, "")}`
-                + `\nscore = ${paragraph.score}`);
             if (cards.length < 9) {
                 if (paragraph.matchingConcepts !== null && paragraph.matchingConcepts.length > 0) {
                     let date = new Date(paragraph.publicationDate);
