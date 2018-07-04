@@ -5,13 +5,12 @@ module.exports = function (response, cards) {
         }
     } else {
         return {
-            fulfillmentText: response,
             payload: {
                 facebook: {
                     attachment: {
-                        type: 'template',
+                        type: "template",
                         payload: {
-                            template_type: 'generic',
+                            template_type: "generic",
                             elements: cards
                         }
                     }
