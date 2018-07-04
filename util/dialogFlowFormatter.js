@@ -1,6 +1,6 @@
-let Card = require("../models/Card");
-let dialogFlow = require("../models/dialogFlow");
-let miiaResponse = require("../util/miiaResponse");
+const Card = require("../models/Card");
+const dialogFlow = require("../models/dialogFlow");
+const miiaResponse = require("../util/miiaResponse");
 
 module.exports = function (response) {
     response = JSON.parse(response);
