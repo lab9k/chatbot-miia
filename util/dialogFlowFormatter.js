@@ -16,7 +16,7 @@ module.exports = function (response) {
                 if (paragraph.matchingConcepts !== null && paragraph.matchingConcepts.length > 0) {
                     let date = new Date(paragraph.publicationDate);
                     cards.push(new Card(miiaResponse(paragraph),
-                        `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
+                        `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`,
                         paragraph.docUri));
                 }
             }
