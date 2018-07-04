@@ -1,2 +1,2 @@
-# miia
-miia chatbot
+# chatbot-nalantis
+Nalantis chatbot
