@@ -1,0 +1,26 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: chatbot-nalantis
+  labels:
+    component: chatbot-nalantis
+spec:
+  replicas: 1
+  strategy:                               # how updating the deployment affect the Replicat Set and Pods
+    type: RollingUpdate                   # Recreate/RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+  selector:
+    matchLabels:
+      app: chatbot-nalantis
+  template:
+    metadata:
+      labels:
+        app: chatbot-nalantis
+    spec:
+      containers:
+        - name: chatbot-nalantis
+          image: lab9k/chatbot-nalantis:latest
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
