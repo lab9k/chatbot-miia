@@ -13,7 +13,8 @@ const miiaAPI = new MiiaAPI(
  * Routes HTTP POST requests to index
  */
 router.post("/", function (req, res) {
-    console.log(req.body.queryResult.queryText);
+    console.log(req.body);
+    console.log(req.body);.queryResult.queryText);
     miiaAPI.query(req.body.queryResult.queryText, (error, response, body) => {
         if (!error && response.statusCode === 200) {
             let dialogFlowResponse = dialogFlowFormatter(body);
