@@ -6,18 +6,18 @@ module.exports = function (response) {
     response = JSON.parse(response);
     let finalResponse;
     let cards = [];
-    if (response.hasOwnProperty("paragraphs") && response.documents !== null) {
+    if (response.hasOwnProperty("paragraphs") && response.paragraphs !== null) {
         // generate list for facebook cards
         for (let i = 0; i < response.paragraphs.length; i++) {
-            let document = response.paragraphs[i];
-            console.log(`Content: ${miiaResponse(document).replace(/^\n/, "")}`
-                + `\nscore = ${document.score}`);
+            let paragraph = response.paragraphs[i];
+            console.log(`Content: ${miiaResponse(paragraph).replace(/^\n/, "")}`
+                + `\nscore = ${paragraph.score}`);
             if (cards.length < 9) {
-                if (document.matchingConcepts !== null && document.matchingConcepts.length > 0) {
-                    let date = new Date(document.publicationDate);
-                    cards.push(new Card(miiaResponse(document),
+                if (paragraph.matchingConcepts !== null && paragraph.matchingConcepts.length > 0) {
+                    let date = new Date(paragraph.publicationDate);
+                    cards.push(new Card(miiaResponse(paragraph),
                         `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
-                        document.docUri));
+                        paragraph.docUri));
                 }
             }
         }
@@ -33,4 +33,3 @@ module.exports = function (response) {
     // Dialogflow format https://dialogflow.com/docs/fulfillment
     return dialogFlow(finalResponse, cards)
 };
-
