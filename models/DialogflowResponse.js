@@ -1,11 +1,9 @@
-module.exports = function (response, cards) {
-    if (cards.length === 0) {
-        return {
-            fulfillmentText: response,
-        }
-    } else {
-        return {
-            payload: {
+class DialogflowResponse {
+    constructor(response, cards) {
+        if (cards.length === 0) {
+            this.fulfillmentText = response;
+        } else {
+            this.payload = {
                 facebook: {
                     attachment: {
                         type: "template",
@@ -18,4 +16,6 @@ module.exports = function (response, cards) {
             }
         }
     }
-};
+}
+
+module.exports = DialogflowResponse;

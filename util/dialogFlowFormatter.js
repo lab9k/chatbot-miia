@@ -1,5 +1,5 @@
 const Card = require("../models/Card");
-const dialogFlow = require("../models/dialogFlow");
+const DialogflowResponse = require("../models/DialogflowResponse");
 const miiaResponse = require("../util/miiaResponse");
 
 module.exports = function (response) {
@@ -31,5 +31,5 @@ module.exports = function (response) {
         finalResponse = "Geen antwoord gevonden";
     }
     // Dialogflow format https://dialogflow.com/docs/fulfillment
-    return dialogFlow(finalResponse, cards)
+    return new DialogflowResponse(finalResponse, cards);
 };
