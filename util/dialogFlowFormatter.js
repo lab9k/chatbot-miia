@@ -1,4 +1,4 @@
-let card = require("../models/card");
+let Card = require("../models/Card");
 let dialogFlow = require("../models/dialogFlow");
 let miiaResponse = require("../util/miiaResponse");
 
@@ -15,7 +15,7 @@ module.exports = function (response) {
             if (cards.length < 9) {
                 if (document.matchingConcepts !== null && document.matchingConcepts.length > 0) {
                     let date = new Date(document.publicationDate);
-                    cards.push(card(miiaResponse(document),
+                    cards.push(new Card(miiaResponse(document),
                         `${date.getDate()}/${date.getMonth()}/${date.getFullYear()}`,
                         document.docUri));
                 }
