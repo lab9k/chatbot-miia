@@ -3,7 +3,7 @@ let dialogFlow = require("../models/dialogFlow");
 let miiaResponse = require("../util/miiaResponse");
 
 module.exports = function (response) {
-    response = JSON.parse(response);
+    response = JSON.parse(JSON.stringify(response));
     let finalResponse;
     let cards = [];
     if (response.hasOwnProperty("paragraphs") && response.documents !== null) {
