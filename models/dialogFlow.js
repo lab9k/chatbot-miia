@@ -2,12 +2,10 @@ module.exports = function (response, cards) {
     if (cards.length === 0) {
         return {
             fulfillmentText: response,
-            source: "http://miia-chatbot-gent.herokuapp.com",
         }
     } else {
         return {
             fulfillmentText: response,
-            source: "http://miia-chatbot-gent.herokuapp.com",
             payload: {
                 facebook: {
                     attachment: {
