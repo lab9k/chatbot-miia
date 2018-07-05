@@ -6,7 +6,8 @@ module.exports = function (response) {
     response = JSON.parse(JSON.stringify(response));
     let finalResponse;
     let cards = [];
-    if (response.hasOwnProperty("paragraphs") && response.documents !== null) {
+    console.log(response);
+    if (response.hasOwnProperty("paragraphs") && response.paragraphs !== null) {
         // generate list for facebook cards
         for (let i = 0; i < response.paragraphs.length; i++) {
             let document = response.paragraphs[i];
