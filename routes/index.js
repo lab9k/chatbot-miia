@@ -36,7 +36,8 @@ router.post("/", function (req, res) {
                 if (cards.length === 0) {
                     fulfillmentText = "Geen antwoord gevonden";
                 } else {
-                    fulfillmentText = getContent(response.paragraphs[0])
+                    fulfillmentText = `${getContent(response.paragraphs[0])}`
+                        + `\nBekijk het verslag: ${response.paragraphs[0].docUri}`;
                 }
             } else {
                 fulfillmentText = "Geen antwoord gevonden";
