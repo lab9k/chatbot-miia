@@ -31,7 +31,7 @@
 
 % Configure content of title page
 
-\title{Rapport: Citynet Sandbox}
+\title{Feedback \\ Citynet / Miia / Nalantis}
 \author{Tom Lauwaerts}
 \newcommand{\organisation}{Lab9K}
 \newcommand{\promotor}{Hans Fraiponts}
@@ -78,20 +78,18 @@
 
 \begin{document}
 	\begin{figure}
-			\includegraphics[width=0.27\textwidth,keepaspectratio,right]{figuren/logo} % Logo of Lab9K
+			\includegraphics[width=0.27\textwidth,keepaspectratio]{figuren/logo} % Logo of Lab9K
 	\end{figure}
-	\vspace*{0.75cm}
+	\vspace*{0.50cm}
 	
 	\noindent
 	\fontsize{30pt}{18pt}\selectfont\textcolor{priColour}{\textbf{\@title}}\newline
 	
 	\fontsize{11pt}{15pt}\selectfont
-	% Sections
-	\section{Feedback web tool}
-	Als we de bevragingen uitvoeren uit het spreadsheet bestand. (\href{https://docs.google.com/spreadsheets/d/1eH3B7dC7MSjM5RJHtsiqMeepdzvHi-di5VJLD1ZBV-s/edit#gid=967764322}{Feedback - bevraging Digipolis - Data Stad Gent}) krijgen we vaak andere resultaten. Meestal worden er correcte concepten gematcht, enkel bij een vraag over \textit{"wild plassen"} herkent het systeem wild en krijg je dus vreemde resultaten. Als er echter geen concepten gematcht worden krijgen we steeds exact dezelfde resultaten terug. Het document met de hoogste score is dan steeds 2015\_GR\_00144.pdf, dit gaat over \textit{"Aanleg van een fietspad "Oude Spoorwegverbinding – tussen Rijvisschestraat en E40 – Gent" - Samenwerkingsovereenkomst tussen de Provincie Oost-Vlaanderen, de Stad Gent en de Vlaamse Landmaatschappij - Goedkeuring"}, met een score van 4,9. Dit gebeurd voor arbitraire input als voor echte vragen zoals \textit{"Welke stichting beheert monumentale tamme kastanjes?"}.
+	Als we de bevragingen uitvoeren uit het spreadsheet bestand. (\href{https://docs.google.com/spreadsheets/d/1eH3B7dC7MSjM5RJHtsiqMeepdzvHi-di5VJLD1ZBV-s/edit#gid=967764322}{Feedback - bevraging Digipolis - Data Stad Gent}) krijgen we vaak andere resultaten. Meestal worden er correcte concepten gematcht, enkel bij een vraag over \textit{"wild plassen"} herkent het systeem wild en krijg je dus vreemde resultaten. Als er echter geen concepten gematcht worden krijgen we steeds exact dezelfde resultaten terug. Het document met de hoogste score is dan steeds 2015\_GR\_00144.pdf, dit gaat over \textit{"Aanleg van een fietspad "Oude Spoorwegverbinding – tussen Rijvisschestraat en E40 – Gent" - Samenwerkingsovereenkomst tussen de Provincie Oost-Vlaanderen, de Stad Gent en de Vlaamse Landmaatschappij - Goedkeuring"}, met een score van 4,9. Dit gebeurt voor arbitraire input als voor echte vragen zoals \textit{"Welke stichting beheert monumentale tamme kastanjes?"}.
 	
 	In de web tool zou het handig zijn om de verschillende scores te zien om ogenblikkelijk te kunnen inschatten hoe goed de resultaten zijn.
-	\section{Feedback API}
+	
 	Bij de API krijgen we dezelfde lijst resultaten voor vragen waar geen concepten gematcht worden. Het lijkt ons echter logischer dat we in zo'n geval waar er geen hoge scores zijn er gewoonweg geen documenten worden teruggegeven. Dit geldt natuurlijk ook voor de web tool.
 	
 	De publicationDate van elk document is steeds maar op het jaar juist, de dag en maand is voor alle items 31 december.
