@@ -16,7 +16,7 @@ const miiaAPI = new MiiaAPI(
 router.post("/", function (req, res) {
     miiaAPI.query(req.body.queryResult.queryText, (error, response, body) => {
         if (!error && response.statusCode === 200) {
-            response = JSON.parse(response);
+            response = JSON.parse(body);
             let fulfillmentText;
             let cards = [];
             if (response.hasOwnProperty("paragraphs") && response.paragraphs !== null) {
