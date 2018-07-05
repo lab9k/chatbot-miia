@@ -15,7 +15,6 @@ const miiaAPI = new MiiaAPI(
  */
 router.post("/", function (req, res) {
     miiaAPI.query(req.body.queryResult.queryText, (error, response, body) => {
-        console.log(error);
         if (!error && response.statusCode === 200) {
             response = JSON.parse(body);
             let fulfillmentText;
