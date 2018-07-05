@@ -1,8 +1,7 @@
 class DialogflowResponse {
     constructor(response, cards) {
-        if (cards.length === 0) {
-            this.fulfillmentText = response;
-        } else {
+        this.fulfillmentText = response;
+        if (cards !== undefined && cards.length !== 0) {
             this.payload = {
                 facebook: {
                     attachment: {
