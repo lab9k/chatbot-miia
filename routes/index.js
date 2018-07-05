@@ -16,7 +16,7 @@ router.post("/", function (req, res) {
     console.log(req.body);
     console.log(req.body.queryResult.queryText);
     miiaAPI.query(req.body.queryResult.queryText, (error, response, body) => {
-        console.log(error + " " + response.statusCode);
+        console.log(error);
         if (!error && response.statusCode === 200) {
             let dialogFlowResponse = dialogFlowFormatter(body);
             res.send(dialogFlowResponse);
