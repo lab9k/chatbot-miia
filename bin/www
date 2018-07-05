@@ -1,11 +1,7 @@
 #!/usr/bin/env node
 const app = require("../app");
 const http = require("http");
-console.log("NODE_ENV: " + process.env.NODE_ENV);
-console.log("BASEURL: " + process.env.BASEURL);
-console.log("USERNAME: " + process.env.USERNAME);
-console.log("PASSWORD: " + process.env.PASSWORD);
-console.log("DOCTYPE: " + process.env.DOCTYPE);
+
 /**
  * Get port from environment and store in Express.
  */
