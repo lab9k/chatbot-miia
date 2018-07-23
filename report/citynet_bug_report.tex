@@ -29,12 +29,12 @@
 
 % Configure content of title page
 
-\title{Feedback \\ Citynet / Miia / Nalantis}
+\title{Feedback Citynet}
 \author{Tom Lauwaerts}
 \newcommand{\organisation}{Lab9K}
 \newcommand{\promotor}{Hans Fraiponts}
 \newcommand{\subject}{Rapport over de Citynet sandbox}
-\date{3 juli 2018}
+\date{4 juli 2018}
 
 % Colour scheme (based on logo)
 
@@ -69,6 +69,11 @@
 \subsectionfont{\color{priColour}}
 \subsubsectionfont{\color{priColour}}
 
+% Header
+\pagestyle{fancy}
+\renewcommand{\headrulewidth}{0pt}
+\rhead{\@date}
+
 \begin{document}
 	\begin{figure}
 			\includegraphics[width=0.27\textwidth,keepaspectratio]{figuren/logo} % Logo of Lab9K
@@ -79,7 +84,7 @@
 	\fontsize{30pt}{28pt}\selectfont\textcolor{priColour}{\textbf{\@title}}\newline
 	
 	\fontsize{11pt}{15pt}\selectfont
-	Als we de bevragingen uitvoeren uit het spreadsheet bestand. (\href{https://docs.google.com/spreadsheets/d/1eH3B7dC7MSjM5RJHtsiqMeepdzvHi-di5VJLD1ZBV-s/edit#gid=967764322}{Feedback - bevraging Digipolis - Data Stad Gent}) krijgen we vaak andere, slechtere resultaten. Dit werd al gemeld en zou in de nabije toekomst moeten aangepast worden.
+	Als we de bevragingen uitvoeren uit het spreadsheet bestand (\href{https://docs.google.com/spreadsheets/d/1eH3B7dC7MSjM5RJHtsiqMeepdzvHi-di5VJLD1ZBV-s/edit#gid=967764322}{Feedback - bevraging Digipolis - Data Stad Gent}) krijgen we vaak andere, slechtere resultaten. Dit werd al gemeld en zou in de nabije toekomst moeten aangepast worden.
 	
 	We merkten ook dat meestal de correcte concepten gematcht werden, enkel bij een vraag over \textit{"wild plassen"} herkent het systeem wild en krijg je dus vreemde resultaten. Als er echter geen concepten gematcht worden krijgen we steeds exact dezelfde resultaten terug. Het document met de hoogste score is dan steeds 2015\_GR\_00144.pdf, dit gaat over:
 	
@@ -91,9 +96,7 @@
 	
 	In de web tool zou het handig zijn om de verschillende scores te zien om ogenblikkelijk te kunnen inschatten hoe goed de resultaten zijn.
 	
-	De publicationDate van elk document is steeds maar op het jaar juist, de dag en maand is voor alle items 31 december.
+	De publicationDate van elk document is steeds maar op het jaar juist, de dag en maand is voor alle items 31 december. Verscheidene strings in de json, bijvoorbeeld content en summary, bevatten leading en trailing newlines.
 	
-	De strings in de json bevatten leading en trailing newlines.
-	
-	We vroegen ons af wat het verschil is tussen de resultaten in documents en paragrahs.
+	We vragen ons af wat het verschil is tussen de resultaten in documents en paragrahs. Voor zo ver we begrijpen omvatten beiden dezelfde documenten, paragraph heeft enkel extra velden zoals docUri en de tekst in de content en dergelijke velden hebben andere tekstinhoud.
 \end{document}
