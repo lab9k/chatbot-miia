@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {WebhookClient, Card} = require("dialogflow-fulfillment");
+const {WebhookClient, Card, Suggestion} = require("dialogflow-fulfillment");
 const DialogflowResponse = require("../models/DialogflowResponse");
 const MiiaAPI = require("../api/MiiaAPI");
 const miiaAPI = new MiiaAPI(
@@ -126,12 +126,21 @@ function getResponse(agent, response, body) {
         }
     }
 
+    // Add short answer
+
     if (fulfillmentText === null && !cards) {
         fulfillmentText = "Geen antwoord gevonden";
+    } else if (fulfillmentText === null) {
+        fulfillmentText = "Geen antwoord gevonden, misschien kunnen bovenstaande documenten je helpen?";
     }
 
-    if (fulfillmentText !== null) {
-        agent.add(fulfillmentText);
+    agent.add(fulfillmentText);
+
+    // TODO follow up
+    if (fulfillmentText !== null || cards) {
+        agent.add("Heeft dit u geholpen?");
+        agent.add(new Suggestion("Ja"));
+        agent.add(new Suggestion("Nee"));
     }
 }
 
@@ -149,7 +158,7 @@ function getParagraphs(paragraphs, document) {
 }
 
 function error(agent) {
-    agent.add(`Geen antwoord gevonden`);
+    agent.add(`Geen resultaten gevonden`);
 }
 
 function getDescription(item) {
