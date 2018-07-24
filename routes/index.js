@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {WebhookClient, Card } = require("dialogflow-fulfillment");
+const {WebhookClient, Card} = require("dialogflow-fulfillment");
 const DialogflowResponse = require("../models/DialogflowResponse");
 const MiiaAPI = require("../api/MiiaAPI");
 const miiaAPI = new MiiaAPI(
@@ -37,52 +37,91 @@ function getResponse(agent, response, body) {
 
     let fulfillmentText = "Geen antwoord gevonden";
 
-    if (parsedBody.hasOwnProperty("paragraphs") && parsedBody.paragraphs !== null) {
-        // Generate list for Facebook cards
-        let i = 0;
-        let j = 0;
-        while (i < parsedBody.paragraphs.length && j < 9) {
-            let paragraph = parsedBody.paragraphs[i];
-            if (paragraph.matchingConcepts !== null && paragraph.matchingConcepts.length > 0) {
-                let date = new Date(paragraph.publicationDate);
+    // Get documents with highest scores
+    if (parsedBody.hasOwnProperty("documents") && parsedBody.documents !== null) {
 
-                let card = new Card(getContent(paragraph));
-                card.setText(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`)
-                    .setButton({
+        // Take the first respond (highest score)
+        if (parsedBody.documents.length > 0) {
+            let doc = parsedBody.documents[0];
+            if (doc.hasOwnProperty("docUri") && doc.hasOwnProperty("displaySummary") && doc.displaySummary !== "") {
+                fulfillmentText = `${doc.displaySummary}\nBekijk het verslag: ${doc.docUri}`;
+            }
+        }
+        agent.add(fulfillmentText);
+
+        let i = 0; // Cursor
+        let j = 0; // Card count (max 10 cards)
+        while (i < parsedBody.documents.length && j < 9) {
+            let document = parsedBody.documents[i];
+
+            // Construct a card, if this is a reasonable answer
+            if (document.hasOwnProperty("score")
+                && document.hasOwnProperty("originalURI")
+                && document.score > 5) {
+
+                // Construct default card
+                let card = new Card(getDescription(document) !== null ? getDescription(document) : "Geen beschrijving");
+                if (document.hasOwnProperty("publicationDate")) {
+                    let date = new Date(document.publicationDate);
+                    card.setText(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`);
+                }
+                if (document.hasOwnProperty("docUri")) {
+                    card.setButton({
                         text: 'Bekijk het verslag',
-                        url: paragraph.docUri
+                        url: document.docUri
                     });
+                }
+
+                // Attempt to make a better card on the basis of the associated paragraph with the highest score
+                if (parsedBody.hasOwnProperty("paragraphs")) {
+                    let paragraphs = [];  // Associated paragraphs
+                    parsedBody.paragraphs.forEach(function (item) {
+                        if (item.hasOwnProperty("originalURI") && item.originalURI === document.originalURI) {
+                            paragraphs.push(item);
+                        }
+                    });
+                    paragraphs.sort(function (a, b) {  // Sort on score, highest to lowest
+                        return b.score - a.score;
+                    });
+
+                    if (paragraphs.length > 0) {
+                        let paragraph = paragraphs[0];  // Highest scoring paragraph
+
+                        // Make card
+                        if (paragraph.hasOwnProperty("publicationDate")
+                            && paragraph.hasOwnProperty("docUri")) {
+                            let date = new Date(paragraph.publicationDate);
+                            if (getDescription(paragraph) !== null) {
+                                card = new Card(getDescription(paragraph));
+                            }
+                            card.setText(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`)
+                                .setButton({
+                                    text: 'Bekijk het verslag',
+                                    url: paragraph.docUri
+                                });
+                        }
+                    }
+                }
                 agent.add(card);
                 j++;
             }
             i++;
         }
-        // For web demo (Take the first respond(highest score)))
-        if (j !== 0) {
-            fulfillmentText = `${getContent(parsedBody.paragraphs[0])}`
-                + `\nBekijk het verslag: ${parsedBody.paragraphs[0].docUri}`;
-        }
     }
-    // Dialogflow format https://dialogflow.com/docs/fulfillment
-    agent.add(fulfillmentText);
 }
 
 function error(agent) {
     agent.add(`Geen antwoord gevonden`);
 }
 
-function getContent(response) {
-    let content;
-    if (response.hasOwnProperty("summary") && response.summary !== null) {
-        content = response.summary;
-    } else if (response.hasOwnProperty("displaySummary") && response.displaySummary !== null) {
-        content = response.displaySummary;
-    } else if (response.hasOwnProperty("content") && response.content !== null) {
-        content = response.content;
-    } else {
-        content = "Geen antwoord gevonden";
+function getDescription(item) {
+    let description = null;
+    if (item.hasOwnProperty("summary") && item.summary !== null) {
+        description = item.summary;
+    } else if (item.hasOwnProperty("displaySummary") && item.displaySummary !== null) {
+        description = item.displaySummary;
     }
-    return content;
+    return description;
 }
 
 module.exports = router;
