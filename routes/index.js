@@ -1,7 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {WebhookClient, Card, Suggestion} = require("dialogflow-fulfillment");
-const DialogflowResponse = require("../models/DialogflowResponse");
+const {WebhookClient, Card} = require("dialogflow-fulfillment");
 const MiiaAPI = require("../api/MiiaAPI");
 const miiaAPI = new MiiaAPI(
     process.env.BASEURL,
@@ -128,21 +127,18 @@ function getResponse(agent, response, body) {
 
     // Add short answer
 
-    let answered = fulfillmentText === null && !cards;
+    let answered = fulfillmentText !== null || cards;
 
-    if (answered) {
-        fulfillmentText = "Geen antwoord gevonden";
+    if (!answered) {
+        fulfillmentText = "Sorry ik kon geen antwoord vinden. Wilt u door een medewerken verder geholpen worden?";
     } else if (fulfillmentText === null) {
         fulfillmentText = "Geen antwoord gevonden, misschien kunnen bovenstaande documenten je helpen?";
     }
 
     agent.add(fulfillmentText);
 
-    // TODO follow up
-    if (!answered) {
-        agent.add("Heeft dit u geholpen?");
-        agent.add(new Suggestion("Ja"));
-        agent.add(new Suggestion("Nee"));
+    if (answered) {
+        agent.add("Hopelijk is dit wat u zocht. Zo niet, wilt u dan door een medewerken verder geholpen worden?");
     }
 }
 
