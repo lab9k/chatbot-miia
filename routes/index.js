@@ -106,6 +106,8 @@ function getResponse(agent, response, body) {
                             let date = new Date(paragraph.publicationDate);
                             if (getDescription(paragraph) !== null) {
                                 card = new Card(getDescription(paragraph));
+                            } else if (paragraph.hasOwnProperty("content") && paragraph.content !== null) {
+                                card = new Card(paragraph.content);
                             }
                             card.setText(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`)
                                 .setButton({
