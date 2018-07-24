@@ -137,9 +137,8 @@ function getResponse(agent, response, body) {
 
     agent.add(fulfillmentText);
 
-    // TODO follow up
     if (answered) {
-        agent.add("Heeft dit u geholpen?");
+        agent.add("Hopelijk is dit wat u zocht. Zo niet, wilt u dan door een medewerken verder geholpen worden?");
     }
 }
 
