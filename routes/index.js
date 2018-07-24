@@ -35,12 +35,13 @@ router.post("/", function (req, res) {
 function getResponse(agent, response, body) {
     let parsedBody = JSON.parse(body);
 
-    let fulfillmentText = "Geen antwoord gevonden";
+    let fulfillmentText = null;
+    let cards = false;
 
     // Get documents with highest scores
     if (parsedBody.hasOwnProperty("documents") && parsedBody.documents !== null) {
 
-        // Take the first item (highest score) as a first/quick response
+        // Take the first item (highest score) as a short text answer
         if (parsedBody.documents.length > 0) {
             let doc = parsedBody.documents[0];
             let paragraphs = [];
@@ -53,9 +54,13 @@ function getResponse(agent, response, body) {
             if (paragraphs.length > 0
                 && paragraph !== null
                 && paragraph.hasOwnProperty("docUri")
-                && getDescription(paragraphs) !== null) {
+                && (getDescription(paragraph) !== null
+                    || (paragraph.hasOwnProperty("content") && paragraph.content !== null))) {
                 // Firstly try the best paragraph
-                fulfillmentText = `${getDescription(paragraphs)}\nBekijk het verslag: ${paragraph.docUri}`;
+                let description = (getDescription(paragraph) !== null)
+                    ? getDescription(paragraph)
+                    : paragraph.content;
+                fulfillmentText = `${description}\nBekijk het verslag: ${paragraph.docUri}`;
             } else if (doc.hasOwnProperty("docUri") && getDescription(doc) !== null) {
                 // Secondly try the document with link
                 fulfillmentText = `${getDescription(doc)}\nBekijk het verslag: ${doc.docUri}`;
@@ -64,7 +69,6 @@ function getResponse(agent, response, body) {
                 fulfillmentText = `${getDescription(doc)}`;
             }
         }
-
 
 
         let i = 0; // Cursor
@@ -103,6 +107,8 @@ function getResponse(agent, response, body) {
                             let date = new Date(paragraph.publicationDate);
                             if (getDescription(paragraph) !== null) {
                                 card = new Card(getDescription(paragraph));
+                            } else if (paragraph.hasOwnProperty("content") && paragraph.content !== null) {
+                                card = new Card(paragraph.content);
                             }
                             card.setText(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`)
                                 .setButton({
@@ -112,6 +118,7 @@ function getResponse(agent, response, body) {
                         }
                     }
                 }
+                cards = true;
                 agent.add(card);
                 j++;
             }
@@ -119,7 +126,13 @@ function getResponse(agent, response, body) {
         }
     }
 
-    agent.add(fulfillmentText);
+    if (fulfillmentText === null && !cards) {
+        fulfillmentText = "Geen antwoord gevonden";
+    }
+
+    if (fulfillmentText !== null) {
+        agent.add(fulfillmentText);
+    }
 }
 
 function getParagraphs(paragraphs, document) {
