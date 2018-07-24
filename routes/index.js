@@ -35,7 +35,8 @@ router.post("/", function (req, res) {
 function getResponse(agent, response, body) {
     let parsedBody = JSON.parse(body);
 
-    let fulfillmentText = "Geen antwoord gevonden";
+    let fulfillmentText = null;
+    let cards = false;
 
     // Get documents with highest scores
     if (parsedBody.hasOwnProperty("documents") && parsedBody.documents !== null) {
@@ -117,6 +118,7 @@ function getResponse(agent, response, body) {
                         }
                     }
                 }
+                cards = true;
                 agent.add(card);
                 j++;
             }
@@ -124,7 +126,13 @@ function getResponse(agent, response, body) {
         }
     }
 
-    agent.add(fulfillmentText);
+    if (fulfillmentText === null && !cards) {
+        fulfillmentText = "Geen antwoord gevonden";
+    }
+
+    if (fulfillmentText !== null) {
+        agent.add(fulfillmentText);
+    }
 }
 
 function getParagraphs(paragraphs, document) {
