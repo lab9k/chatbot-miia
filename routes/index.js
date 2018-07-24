@@ -40,8 +40,10 @@ function getResponse(agent, response, body) {
     // Get documents with highest scores
     if (parsedBody.hasOwnProperty("documents") && parsedBody.documents !== null) {
 
-        // Take the first item (highest score) as a short text answer
-        if (parsedBody.documents.length > 0) {
+        // Take the first item (highest score, above 5) as a short text answer
+        if (parsedBody.documents.length > 0
+            && parsedBody.documents[0].hasOwnProperty("score")
+            && parsedBody.documents[0].score > 5) {
             let doc = parsedBody.documents[0];
             let paragraphs = [];
             let paragraph;
@@ -79,7 +81,6 @@ function getResponse(agent, response, body) {
             if (document.hasOwnProperty("score")
                 && document.hasOwnProperty("originalURI")
                 && document.score > 5) {
-
                 // Construct default card
                 let card = new Card(getDescription(document) !== null ? getDescription(document) : "Geen beschrijving");
                 if (document.hasOwnProperty("publicationDate")) {
