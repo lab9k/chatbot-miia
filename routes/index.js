@@ -128,7 +128,9 @@ function getResponse(agent, response, body) {
 
     // Add short answer
 
-    if (fulfillmentText === null && !cards) {
+    let answered = fulfillmentText === null && !cards;
+
+    if (answered) {
         fulfillmentText = "Geen antwoord gevonden";
     } else if (fulfillmentText === null) {
         fulfillmentText = "Geen antwoord gevonden, misschien kunnen bovenstaande documenten je helpen?";
@@ -137,7 +139,7 @@ function getResponse(agent, response, body) {
     agent.add(fulfillmentText);
 
     // TODO follow up
-    if (fulfillmentText !== null || cards) {
+    if (!answered) {
         agent.add("Heeft dit u geholpen?");
         agent.add(new Suggestion("Ja"));
         agent.add(new Suggestion("Nee"));
