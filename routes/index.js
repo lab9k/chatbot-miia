@@ -40,14 +40,32 @@ function getResponse(agent, response, body) {
     // Get documents with highest scores
     if (parsedBody.hasOwnProperty("documents") && parsedBody.documents !== null) {
 
-        // Take the first respond (highest score)
+        // Take the first item (highest score) as a first/quick response
         if (parsedBody.documents.length > 0) {
             let doc = parsedBody.documents[0];
-            if (doc.hasOwnProperty("docUri") && doc.hasOwnProperty("displaySummary") && doc.displaySummary !== "") {
-                fulfillmentText = `${doc.displaySummary}\nBekijk het verslag: ${doc.docUri}`;
+            let paragraphs = [];
+            let paragraph;
+            if (parsedBody.hasOwnProperty("paragraphs")) {
+                paragraphs = getParagraphs(parsedBody.paragraphs, doc);  // Get associated paragraphs
+                paragraph = paragraphs[0];
+            }
+
+            if (paragraphs.length > 0
+                && paragraph !== null
+                && paragraph.hasOwnProperty("docUri")
+                && getDescription(paragraphs) !== null) {
+                // Firstly try the best paragraph
+                fulfillmentText = `${getDescription(paragraphs)}\nBekijk het verslag: ${paragraph.docUri}`;
+            } else if (doc.hasOwnProperty("docUri") && getDescription(doc) !== null) {
+                // Secondly try the document with link
+                fulfillmentText = `${getDescription(doc)}\nBekijk het verslag: ${doc.docUri}`;
+            } else if (getDescription(doc) !== null) {
+                // Thirdly try the document without link
+                fulfillmentText = `${getDescription(doc)}`;
             }
         }
-        agent.add(fulfillmentText);
+
+
 
         let i = 0; // Cursor
         let j = 0; // Card count (max 10 cards)
@@ -74,15 +92,7 @@ function getResponse(agent, response, body) {
 
                 // Attempt to make a better card on the basis of the associated paragraph with the highest score
                 if (parsedBody.hasOwnProperty("paragraphs")) {
-                    let paragraphs = [];  // Associated paragraphs
-                    parsedBody.paragraphs.forEach(function (item) {
-                        if (item.hasOwnProperty("originalURI") && item.originalURI === document.originalURI) {
-                            paragraphs.push(item);
-                        }
-                    });
-                    paragraphs.sort(function (a, b) {  // Sort on score, highest to lowest
-                        return b.score - a.score;
-                    });
+                    let paragraphs = getParagraphs(parsedBody.paragraphs, document);  // Get associated paragraphs
 
                     if (paragraphs.length > 0) {
                         let paragraph = paragraphs[0];  // Highest scoring paragraph
@@ -108,6 +118,21 @@ function getResponse(agent, response, body) {
             i++;
         }
     }
+
+    agent.add(fulfillmentText);
+}
+
+function getParagraphs(paragraphs, document) {
+    let pars = [];  // Associated paragraphs
+    paragraphs.forEach(function (item) {
+        if (item.hasOwnProperty("originalURI") && item.originalURI === document.originalURI) {
+            pars.push(item);
+        }
+    });
+    pars.sort(function (a, b) {  // Sort on score, highest to lowest
+        return b.score - a.score;
+    });
+    return pars;
 }
 
 function error(agent) {
