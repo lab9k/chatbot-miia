@@ -9,7 +9,7 @@ const miiaAPI = new MiiaAPI(
     process.env.PASSWORD,
     process.env.DOCTYPE
 );
-const MAX_CARD_AMOUNT = 9;
+const MAX_CARD_AMOUNT = 10;
 const MAX_DESCRIPTION_LENGTH = 255;
 
 /**
@@ -27,7 +27,7 @@ router.post("/", function (req, res) {
         if (!error && response.statusCode === 200) {
             intentMap.set("Default Fallback Intent", (agent) => getResponse(agent, res, body));
         } else {
-            intentMap.set("Default Fallback Intent", error);
+            intentMap.set("Default Fallback Intent", getErrorResponse);
         }
         agent.handleRequest(intentMap);
 
@@ -113,7 +113,7 @@ function getResponse(agent, response, body) {
 
 }
 
-function error(agent) {
+function getErrorResponse(agent) {
     agent.add(`Geen resultaten gevonden`);
 }
 
