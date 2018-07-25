@@ -35,6 +35,18 @@ const MAX_CARD_AMOUNT = 10;
 const MAX_DESCRIPTION_LENGTH = 255;
 
 /**
+ * The name for the follow-up context of a good answer
+ * @type {string}
+ */
+const GOOD_ANSWER_KEY = "GoodAnswer";
+
+/**
+ * The name for the follow-up context of a moderate answer
+ * @type {string}
+ */
+const MODERATE_ANSWER_KEY = "ModerateAnswer";
+
+/**
  * Routes HTTP POST requests to index. It catches all fulfillment's from Dialogflow.
  */
 router.post("/", function (req, res) {
@@ -44,19 +56,29 @@ router.post("/", function (req, res) {
 
     const agent = new WebhookClient({request: req, response: res});
 
+    // if (agent.getContext(GOOD_ANSWER_KEY) !== null) {
+    //     // TODO Catch answer from user to the follow-up question
+    //     return;
+    // }
+
     miiaAPI.query(req.body.queryResult.queryText, (error, response, body) => {
         let intentMap = new Map();
+
         if (!error && response.statusCode === 200) {
-            intentMap.set("Default Fallback Intent", (agent) => getResponse(agent, res, body));
+            intentMap.set("Default Fallback Intent", (agent) =>
+                getResponse(agent, req.body.queryResult.queryText, body));
         } else {
             intentMap.set("Default Fallback Intent", getErrorResponse);
         }
+        intentMap.set("Good Answer Followup - no", (agent) =>
+            getResponse(agent, req.body.queryResult.queryText, body, true));
+
         agent.handleRequest(intentMap);
 
     });
 });
 
-function getResponse(agent, response, body) {
+function getResponse(agent, question, body, goodFollowup=false) {
     let parsedBody = JSON.parse(body);
     let paragraphs = (parsedBody.hasOwnProperty("paragraphs")) ? parsedBody.paragraphs : [];
 
@@ -73,8 +95,10 @@ function getResponse(agent, response, body) {
 
     // Search for a meaningful answer
     let highestScoring = parsedBody.documents[0];
-    if (highestScoring.hasOwnProperty("score") && highestScoring.score > UPPER_BOUND_SCORE) {
-        // If the highest scoring document has a score above UPPER_BOUND_SCORE, we only return a short response
+    if (!goodFollowup && highestScoring.hasOwnProperty("score") && highestScoring.score > UPPER_BOUND_SCORE) {
+        // We got a good anwser so we set the appropriate context
+        agent.setContext({"name": GOOD_ANSWER_KEY, "lifespan": 1, "parameters": {"question": question}}); // TODO lifespan 2 but clear when matched
+        // Make a short response
         fulfillmentText = getShortResponse(
             highestScoring,
             getParagraphs(highestScoring, paragraphs).length > 0
@@ -83,6 +107,7 @@ function getResponse(agent, response, body) {
     } else {
         // If no high scoring document was found we send a set of documents, scoring higher than LOWER_BOUND_SCORE.
         cards = getCardResponse(document, getParagraphs(document, paragraphs));
+        agent.setContext({"name": MODERATE_ANSWER_KEY, "lifespan": 1, "parameters": {}});
     }
 
     // If no meaningful answer could be found a help response is send
@@ -95,8 +120,14 @@ function getResponse(agent, response, body) {
     if (fulfillmentText !== null) {
         agent.add(fulfillmentText);
     } else {
+        if (goodFollowup) {
+            agent.add("Misschien kunnen deze documenten je helpen:");
+        }
         cards.forEach(card => agent.add(card));
     }
+
+    // Send follow-up question
+    agent.add("Heeft dit uw vraag beantwoord?");
 }
 
 function getErrorResponse(agent) {
