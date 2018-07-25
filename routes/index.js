@@ -109,7 +109,7 @@ function getResponse(agent, response, body) {
     }
 
     cards.forEach(card => agent.add(card));
-    agent.add("Hopelijk is dit wat u zocht. Zo niet, wilt u dan door een medewerken verder geholpen worden?");
+    agent.add("Hopelijk is dit wat u zocht. Zo niet, wilt u dan door een medewerker verder geholpen worden?");
 
 }
 
