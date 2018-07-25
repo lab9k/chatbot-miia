@@ -38,7 +38,7 @@ function getResponse(agent, response, body) {
     let parsedBody = JSON.parse(body);
 
     let fulfillmentText = null;
-    let cards = false;
+    let cards = [];
 
     // Get documents with highest scores
     if (parsedBody.hasOwnProperty("documents") && parsedBody.documents !== null) {
@@ -86,7 +86,7 @@ function getResponse(agent, response, body) {
                 : [];
             let card = getCard(document, paragraphs);
             if (card !== null) {
-                agent.add(card);
+                cards.push(card);
                 j++;
             }
 
@@ -94,21 +94,23 @@ function getResponse(agent, response, body) {
         }
     }
 
-    // Add short answer
+    // Add answers
 
-    let answered = fulfillmentText !== null || cards;
-
-    if (!answered) {
-        fulfillmentText = "Sorry ik kon geen antwoord vinden. Wilt u door een medewerken verder geholpen worden?";
-    } else if (fulfillmentText === null) {
-        fulfillmentText = "Geen antwoord gevonden, misschien kunnen bovenstaande documenten je helpen?";
+    if (fulfillmentText !== null) {
+        agent.add(fulfillmentText);
+        if (cards.length > 0) {
+            agent.add("Als dit niet het antwoord is dat u zocht kunnen onderstaande documenten u misschien helpen.");
+        }
+    } else if (cards.length > 0) {
+        agent.add("Geen antwoord gevonden, misschien kunnen onderstaande documenten je helpen?");
+    } else {
+        agent.add("Sorry ik kon geen antwoord vinden. Wilt u door een medewerken verder geholpen worden?");
+        return;
     }
 
-    agent.add(fulfillmentText);
+    cards.forEach(card => agent.add(card));
+    agent.add("Hopelijk is dit wat u zocht. Zo niet, wilt u dan door een medewerken verder geholpen worden?");
 
-    if (answered) {
-        agent.add("Hopelijk is dit wat u zocht. Zo niet, wilt u dan door een medewerken verder geholpen worden?");
-    }
 }
 
 function error(agent) {
