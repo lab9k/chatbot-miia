@@ -2,12 +2,15 @@ const express = require("express");
 const router = express.Router();
 const {WebhookClient, Card} = require("dialogflow-fulfillment");
 const MiiaAPI = require("../api/MiiaAPI");
+
 const miiaAPI = new MiiaAPI(
     process.env.BASEURL,
     process.env.USERNAME,
     process.env.PASSWORD,
     process.env.DOCTYPE
 );
+const MAX_CARD_AMOUNT = 9;
+const MAX_DESCRIPTION_LENGTH = 255;
 
 /**
  * Routes HTTP POST requests to index
@@ -48,7 +51,7 @@ function getResponse(agent, response, body) {
             let paragraphs = [];
             let paragraph;
             if (parsedBody.hasOwnProperty("paragraphs")) {
-                paragraphs = getParagraphs(parsedBody.paragraphs, doc);  // Get associated paragraphs
+                paragraphs = getParagraphs(doc, parsedBody.paragraphs);  // Get associated paragraphs
                 paragraph = paragraphs[0];
             }
 
@@ -74,54 +77,19 @@ function getResponse(agent, response, body) {
 
         let i = 0; // Cursor
         let j = 0; // Card count (max 10 cards)
-        while (i < parsedBody.documents.length && j < 9) {
+        while (i < parsedBody.documents.length && j < MAX_CARD_AMOUNT) {
             let document = parsedBody.documents[i];
 
             // Construct a card, if this is a reasonable answer
-            if (document.hasOwnProperty("score")
-                && document.hasOwnProperty("originalURI")
-                && document.score > 5) {
-                // Construct default card
-                let card = new Card(getDescription(document) !== null ? getDescription(document) : "Geen beschrijving");
-                if (document.hasOwnProperty("publicationDate")) {
-                    let date = new Date(document.publicationDate);
-                    card.setText(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`);
-                }
-                if (document.hasOwnProperty("docUri")) {
-                    card.setButton({
-                        text: 'Bekijk het verslag',
-                        url: document.docUri
-                    });
-                }
-
-                // Attempt to make a better card on the basis of the associated paragraph with the highest score
-                if (parsedBody.hasOwnProperty("paragraphs")) {
-                    let paragraphs = getParagraphs(parsedBody.paragraphs, document);  // Get associated paragraphs
-
-                    if (paragraphs.length > 0) {
-                        let paragraph = paragraphs[0];  // Highest scoring paragraph
-
-                        // Make card
-                        if (paragraph.hasOwnProperty("publicationDate")
-                            && paragraph.hasOwnProperty("docUri")) {
-                            let date = new Date(paragraph.publicationDate);
-                            if (getDescription(paragraph) !== null) {
-                                card = new Card(getDescription(paragraph));
-                            } else if (paragraph.hasOwnProperty("content") && paragraph.content !== null) {
-                                card = new Card(paragraph.content);
-                            }
-                            card.setText(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`)
-                                .setButton({
-                                    text: 'Bekijk het verslag',
-                                    url: paragraph.docUri
-                                });
-                        }
-                    }
-                }
-                cards = true;
+            let paragraphs = (parsedBody.hasOwnProperty("paragraphs"))
+                ? getParagraphs(document, parsedBody.paragraphs)
+                : [];
+            let card = getCard(document, paragraphs);
+            if (card !== null) {
                 agent.add(card);
                 j++;
             }
+
             i++;
         }
     }
@@ -143,7 +111,61 @@ function getResponse(agent, response, body) {
     }
 }
 
-function getParagraphs(paragraphs, document) {
+function error(agent) {
+    agent.add(`Geen resultaten gevonden`);
+}
+
+/**
+ * Makes a card representation of a document. Returns null if no card could be made.
+ *
+ * @param document is the document to be represented by the card.
+ * @param paragraphs is an optional parameter to improve text of card.
+ * @returns {Card|*}
+ */
+function getCard(document, paragraphs) {
+    if (!document.hasOwnProperty("score")
+        || !document.hasOwnProperty("originalURI")
+        || document.score <= 5) {
+        return;
+    }
+
+    // Construct default card
+    let card = new Card(getDescription(document) !== null ? getDescription(document) : "Geen beschrijving");
+    if (document.hasOwnProperty("publicationDate")) {
+        let date = new Date(document.publicationDate);
+        card.setText(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`);
+    }
+    if (document.hasOwnProperty("docUri")) {
+        card.setButton({
+            text: "Bekijk het verslag",
+            url: document.docUri
+        });
+    }
+
+    // Attempt improve card on the basis of the associated paragraph with the highest score
+    if (paragraphs.length > 0) {
+        let paragraph = paragraphs[0];  // Highest scoring paragraph
+        if (getDescription(paragraph) !== null) {
+            card = new Card(getDescription(paragraph));
+            if (paragraph.hasOwnProperty("docUri")) {
+                card.setButton({
+                    text: "Bekijk het verslag",
+                    url: paragraph.docUri
+                });
+            }
+        }
+    }
+
+    return card;
+}
+
+/**
+ * @param document
+ * @param paragraphs
+ * @returns {Array} a list of associated paragraphs of a given document, sorted from highest to lowest score. Returns an
+ * empty list on failure.
+ */
+function getParagraphs(document, paragraphs) {
     let pars = [];  // Associated paragraphs
     paragraphs.forEach(function (item) {
         if (item.hasOwnProperty("originalURI") && item.originalURI === document.originalURI) {
@@ -156,16 +178,16 @@ function getParagraphs(paragraphs, document) {
     return pars;
 }
 
-function error(agent) {
-    agent.add(`Geen resultaten gevonden`);
-}
-
 function getDescription(item) {
     let description = null;
     if (item.hasOwnProperty("summary") && item.summary !== null) {
         description = item.summary;
     } else if (item.hasOwnProperty("displaySummary") && item.displaySummary !== null) {
         description = item.displaySummary;
+    } else if (item.hasOwnProperty("content") && item.content !== null) {
+        description = (item.content.length <= MAX_DESCRIPTION_LENGTH)
+            ? item.content
+            : `${item.content.slice(0, MAX_DESCRIPTION_LENGTH-3)}...`;
     }
     return description;
 }
