@@ -128,7 +128,7 @@ function getCard(document, paragraphs) {
     if (!document.hasOwnProperty("score")
         || !document.hasOwnProperty("originalURI")
         || document.score <= 5) {
-        return;
+        return null;
     }
 
     // Construct default card
