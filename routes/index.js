@@ -80,6 +80,7 @@ router.post("/", function (req, res) {
 
     intentMap.set("Good Answer Followup - no", function (agent) {
         let question = agent.getContext(GOOD_ANSWER_KEY).parameters.question;
+        agent.clearContext(GOOD_ANSWER_KEY);
         return cityNetAPI.query(question)
             .then(function (body) {
                 sendResponse(agent, question, body, true);
@@ -123,7 +124,6 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
     if (!goodanswer && highestScoring.hasOwnProperty("score") && highestScoring.score > UPPER_BOUND_SCORE) {
         // We got a good anwser so we set the appropriate context
         agent.setContext({"name": GOOD_ANSWER_KEY, "lifespan": INTENT_FOLLOWUP_LIFESPAN, "parameters": {"question": question}});
-        agent.clearContext(GOOD_ANSWER_KEY);
         // Make a short response
         fulfillmentText = getShortResponse(
             highestScoring,
