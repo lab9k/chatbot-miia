@@ -150,16 +150,36 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
     }
 
     // Send answer
+    agent.requestSource = agent.FACEBOOK;
+
     if (fulfillmentText !== null) {
         agent.add(fulfillmentText);
     } else {
         if (goodanswer) {
             agent.add("Misschien kunnen deze documenten je helpen:");
         }
-        cards.forEach(card => agent.add(card));
+        cards.forEach(card => {
+            // card.setPlatform(agent.FACEBOOK);
+            agent.add(card);
+        });
     }
 
     // Send follow-up question
+    // For Facebook
+    agent.add(new Payload(agent.FACEBOOK, {
+        text: `${responses.query_followup.nl[Math.floor(Math.random() * responses.query_followup.nl.length)]}`,
+        quick_replies: [
+            {
+                content_type: "text",
+                title: "ja"
+            },
+            {
+                content_type: "text",
+                title: "nee"
+            }
+        ]
+    }));
+    // For other platforms
     agent.add(responses.query_followup.nl[Math.floor(Math.random() * responses.query_followup.nl.length)]);
 }
 
