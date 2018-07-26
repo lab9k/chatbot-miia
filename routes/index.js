@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {WebhookClient, Card} = require("dialogflow-fulfillment");
+const {WebhookClient, Card, Payload} = require("dialogflow-fulfillment");
 const CityNetAPI = require("../api/CityNetAPI");
 const responses = require("../res/responses");
 const cityNetAPI = new CityNetAPI(
@@ -74,7 +74,7 @@ router.post("/", function (req, res) {
                 sendResponse(agent, req.body.queryResult.queryText, body);
             })
             .catch(function () {
-                agent.add(getErrorResponse());
+                sendErrorResponse(agent);
             });
     });
 
@@ -85,7 +85,7 @@ router.post("/", function (req, res) {
                 sendResponse(agent, question, body, true);
             })
             .catch(function () {
-                agent.add(getErrorResponse());
+                sendErrorResponse(agent);
             });
     });
 
@@ -114,7 +114,7 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
     if (!parsedBody.hasOwnProperty("documents")
         || parsedBody.documents === null
         || parsedBody.documents.length <= 0) {
-        agent.add(getHelpResponse(question.length >= LONG_ANSWER_BOUND));
+        sendHelpResponse(agent, question.length >= LONG_ANSWER_BOUND);
         return;
     }
 
@@ -122,7 +122,11 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
     let highestScoring = parsedBody.documents[0];
     if (!goodanswer && highestScoring.hasOwnProperty("score") && highestScoring.score > UPPER_BOUND_SCORE) {
         // We got a good anwser so we set the appropriate context
-        agent.setContext({"name": GOOD_ANSWER_KEY, "lifespan": INTENT_FOLLOWUP_LIFESPAN, "parameters": {"question": question}});
+        agent.setContext({
+            "name": GOOD_ANSWER_KEY,
+            "lifespan": INTENT_FOLLOWUP_LIFESPAN,
+            "parameters": {"question": question}
+        });
         agent.clearContext(GOOD_ANSWER_KEY);
         // Make a short response
         fulfillmentText = getShortResponse(
@@ -141,7 +145,7 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
 
     // If no meaningful answer could be found a help response is send
     if (fulfillmentText === null && cards.length <= 0) {
-        agent.add(getHelpResponse(question.length >= LONG_ANSWER_BOUND));
+        sendHelpResponse(agent, question.length >= LONG_ANSWER_BOUND);
         return;
     }
 
@@ -157,6 +161,36 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
 
     // Send follow-up question
     agent.add(responses.query_followup.nl[Math.floor(Math.random() * responses.query_followup.nl.length)]);
+}
+
+function sendErrorResponse(agent) {
+    let text = responses.error.nl[Math.floor(Math.random() * responses.error.nl.length)];
+    agent.requestSource = agent.FACEBOOK;
+    agent.add(new Payload(agent.FACEBOOK, {
+        text: `${text}`,
+        quick_replies: [
+            {
+                content_type: "email",
+                title: responses.help.email
+            }
+        ]
+    }));
+}
+
+function sendHelpResponse(agent, long = false) {
+    let text = (long)
+        ? responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)]
+        : responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)];
+    agent.requestSource = agent.FACEBOOK;
+    agent.add(new Payload(agent.FACEBOOK, {
+        text: `${text}`,
+        quick_replies: [
+            {
+                content_type: "email",
+                title: responses.help.email
+            }
+        ]
+    }));
 }
 
 /**
@@ -214,19 +248,6 @@ function getCardResponse(documents, paragraphs) {
         i++;
     }
     return cards;
-}
-
-function getErrorResponse() {
-    return responses.error.nl[Math.floor(Math.random() * responses.error.nl.length)];
-}
-
-function getHelpResponse(long=false) {
-    if (long) {
-        // Send a special help response for long questions
-        return responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)];
-    } else {
-        return responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)];
-    }
 }
 
 
