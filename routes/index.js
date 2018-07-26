@@ -119,8 +119,10 @@ function getResponse(agent, question, body, goodFollowup = false) {
     } else {
         // If no high scoring document was found we send a set of documents, scoring higher than LOWER_BOUND_SCORE.
         cards = getCardResponse(parsedBody.documents, paragraphs);
-        agent.setContext({"name": MODERATE_ANSWER_KEY, "lifespan": 1, "parameters": {}});
-        agent.setContext({"name": QUERY_FOLLOWUP_KEY, "lifespan": 1, "parameters": {}});
+        if (cards.length > 0) {
+            agent.setContext({"name": MODERATE_ANSWER_KEY, "lifespan": 1, "parameters": {}});
+            agent.setContext({"name": QUERY_FOLLOWUP_KEY, "lifespan": 1, "parameters": {}});
+        }
     }
 
     // If no meaningful answer could be found a help response is send
