@@ -2,7 +2,7 @@ const express = require("express");
 const router = express.Router();
 const {WebhookClient, Card} = require("dialogflow-fulfillment");
 const MiiaAPI = require("../api/MiiaAPI");
-
+const responses = require("../res/responses");
 const miiaAPI = new MiiaAPI(
     process.env.BASEURL,
     process.env.USERNAME,
@@ -21,6 +21,8 @@ const LOWER_BOUND_SCORE = 5;
  * @type {number}
  */
 const UPPER_BOUND_SCORE = 30;
+
+const LONG_ANSWER_BOUND = 100;
 
 /**
  * Maximum amount of cards to be shown in a carousel.
@@ -93,7 +95,7 @@ function getResponse(agent, question, body, goodFollowup = false) {
     if (!parsedBody.hasOwnProperty("documents")
         || parsedBody.documents === null
         || parsedBody.documents.length <= 0) {
-        agent.add(getHelpResponse());
+        agent.add(getHelpResponse(question.length >= LONG_ANSWER_BOUND));
         return;
     }
 
@@ -116,7 +118,7 @@ function getResponse(agent, question, body, goodFollowup = false) {
 
     // If no meaningful answer could be found a help response is send
     if (fulfillmentText === null && cards.length <= 0) {
-        agent.add(getHelpResponse());
+        agent.add(getHelpResponse(question.length >= LONG_ANSWER_BOUND));
         return;
     }
 
@@ -131,11 +133,11 @@ function getResponse(agent, question, body, goodFollowup = false) {
     }
 
     // Send follow-up question
-    agent.add("Heeft dit uw vraag beantwoord?");
+    agent.add(responses.query_followup.nl[Math.floor(Math.random() * responses.query_followup.nl.length)]);
 }
 
 function getErrorResponse(agent) {
-    agent.add(`Geen resultaten gevonden`);
+    agent.add(responses.error.nl[Math.floor(Math.random() * responses.error.nl.length)]);
 }
 
 /**
@@ -193,10 +195,14 @@ function getCardResponse(documents, paragraphs) {
     return cards;
 }
 
-function getHelpResponse() {
-    // TODO Give some tips (refrase etc.) and give gentinfo@stad.gent for more help
-    return "Sorry ik kon geen antwoord vinden. " +
-        "U kan hopelijk verder geholpen worden op dit e-mailadres: gentinfo@stad.gent";
+function getHelpResponse(long=false) {
+    if (long) {
+        // Send a special help response for long questions
+        return responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)];
+
+    } else {
+        return responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)];
+    }
 }
 
 
