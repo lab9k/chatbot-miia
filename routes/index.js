@@ -1,9 +1,9 @@
 const express = require("express");
 const router = express.Router();
 const {WebhookClient, Card} = require("dialogflow-fulfillment");
-const MiiaAPI = require("../api/MiiaAPI");
+const CityNetAPI = require("../api/CityNetAPI");
 const responses = require("../res/responses");
-const miiaAPI = new MiiaAPI(
+const cityNetAPI = new CityNetAPI(
     process.env.BASEURL,
     process.env.USERNAME,
     process.env.PASSWORD,
@@ -69,30 +69,41 @@ router.post("/", function (req, res) {
     let intentMap = new Map();
 
     intentMap.set("Query Intent", function (agent) {
-        return miiaAPI.query(agent.query)
+        return cityNetAPI.query(agent.query)
             .then(function (body) {
-                getResponse(agent, req.body.queryResult.queryText, body);
+                sendResponse(agent, req.body.queryResult.queryText, body);
             })
             .catch(function () {
-                getErrorResponse(agent);
+                agent.add(getErrorResponse());
             });
     });
 
     intentMap.set("Good Answer Followup - no", function (agent) {
         let question = agent.getContext(GOOD_ANSWER_KEY).parameters.question;
-        return miiaAPI.query(question)
+        return cityNetAPI.query(question)
             .then(function (body) {
-                getResponse(agent, question, body, true);
+                sendResponse(agent, question, body, true);
             })
             .catch(function () {
-                getErrorResponse(agent);
+                agent.add(getErrorResponse());
             });
     });
 
-    agent.handleRequest(intentMap);
+    agent.handleRequest(intentMap).catch();
 });
 
-function getResponse(agent, question, body, goodFollowup = false) {
+/**
+ * Given a CityNetAPI response, construct a response and add them to the WebhookClient.
+ *
+ * @param {WebhookClient} agent
+ * @param {string} question
+ *  The question send to the CityNetAPI
+ * @param {string} body
+ *  Body of the CityNetAPIs response
+ * @param {Boolean} goodanswer
+ *  Boolean to express if the goodanswer context is present or not
+ */
+function sendResponse(agent, question, body, goodanswer = false) { // TODO refactor
     let parsedBody = JSON.parse(body);
     let paragraphs = (parsedBody.hasOwnProperty("paragraphs")) ? parsedBody.paragraphs : [];
 
@@ -109,7 +120,7 @@ function getResponse(agent, question, body, goodFollowup = false) {
 
     // Search for a meaningful answer
     let highestScoring = parsedBody.documents[0];
-    if (!goodFollowup && highestScoring.hasOwnProperty("score") && highestScoring.score > UPPER_BOUND_SCORE) {
+    if (!goodanswer && highestScoring.hasOwnProperty("score") && highestScoring.score > UPPER_BOUND_SCORE) {
         // We got a good anwser so we set the appropriate context
         agent.setContext({"name": GOOD_ANSWER_KEY, "lifespan": INTENT_FOLLOWUP_LIFESPAN, "parameters": {"question": question}});
         agent.clearContext(GOOD_ANSWER_KEY);
@@ -138,7 +149,7 @@ function getResponse(agent, question, body, goodFollowup = false) {
     if (fulfillmentText !== null) {
         agent.add(fulfillmentText);
     } else {
-        if (goodFollowup) {
+        if (goodanswer) {
             agent.add("Misschien kunnen deze documenten je helpen:");
         }
         cards.forEach(card => agent.add(card));
@@ -148,18 +159,16 @@ function getResponse(agent, question, body, goodFollowup = false) {
     agent.add(responses.query_followup.nl[Math.floor(Math.random() * responses.query_followup.nl.length)]);
 }
 
-function getErrorResponse(agent) {
-    agent.add(responses.error.nl[Math.floor(Math.random() * responses.error.nl.length)]);
-}
-
 /**
  * Gives a response for a single document. Only displays a short paragraph or description of the document and a link to
  * the corresponding pdf.
  *
  * Returns null if no meaningful message could be constructed.
  *
- * @param document to be represented
- * @param paragraph from the document
+ * @param document
+ *  The document which is to be represented by the short response
+ * @param paragraph
+ *  The best scoring paragraph from the document
  * @returns {string|null}
  */
 function getShortResponse(document, paragraph) {
@@ -189,7 +198,7 @@ function getShortResponse(document, paragraph) {
  *
  * @param documents
  * @param paragraphs
- * @returns {Array}
+ * @returns {Array} a list of cards
  */
 function getCardResponse(documents, paragraphs) {
     let cards = [];
@@ -207,11 +216,14 @@ function getCardResponse(documents, paragraphs) {
     return cards;
 }
 
+function getErrorResponse() {
+    return responses.error.nl[Math.floor(Math.random() * responses.error.nl.length)];
+}
+
 function getHelpResponse(long=false) {
     if (long) {
         // Send a special help response for long questions
         return responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)];
-
     } else {
         return responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)];
     }
@@ -221,8 +233,10 @@ function getHelpResponse(long=false) {
 /**
  * Makes a card representation of a document. Returns null if no card could be made.
  *
- * @param document is the document to be represented by the card.
- * @param paragraphs is an optional parameter to improve text of card.
+ * @param {Object} document
+ *  The document to be represented by the card.
+ * @param {Array} paragraphs
+ *  An list of paragraphs to improve text of card. Can be an empty list.
  * @returns {Card|null}
  */
 function getCard(document, paragraphs) {
