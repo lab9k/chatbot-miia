@@ -1,9 +1,10 @@
 const request = require("request-promise");
 
 /**
- * Wrapper klasse voor Miia Rest API
+ * Wrapper klasse voor CityNet Rest API
+ * @class
  */
-class MiiaAPI {
+class CityNetAPI {
     constructor(baseURL, username, password, docType) {
         this.baseURL = baseURL;
         this.username = username;
@@ -31,4 +32,4 @@ class MiiaAPI {
     }
 }
 
-module.exports = MiiaAPI;
+module.exports = CityNetAPI;
