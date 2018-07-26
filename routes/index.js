@@ -37,6 +37,12 @@ const MAX_CARD_AMOUNT = 10;
 const MAX_DESCRIPTION_LENGTH = 255;
 
 /**
+ * The name for the follow-up context of the default query intent
+ * @type {string}
+ */
+const QUERY_FOLLOWUP_KEY = "queryintent-followup";
+
+/**
  * The name for the follow-up context of a good answer
  * @type {string}
  */
@@ -60,7 +66,7 @@ router.post("/", function (req, res) {
 
     let intentMap = new Map();
 
-    intentMap.set("Default Fallback Intent", function (agent) {
+    intentMap.set("Query Intent", function (agent) {
         return miiaAPI.query(agent.query)
             .then(function (body) {
                 getResponse(agent, req.body.queryResult.queryText, body);
@@ -114,6 +120,7 @@ function getResponse(agent, question, body, goodFollowup = false) {
         // If no high scoring document was found we send a set of documents, scoring higher than LOWER_BOUND_SCORE.
         cards = getCardResponse(parsedBody.documents, paragraphs);
         agent.setContext({"name": MODERATE_ANSWER_KEY, "lifespan": 1, "parameters": {}});
+        agent.setContext({"name": QUERY_FOLLOWUP_KEY, "lifespan": 1, "parameters": {}});
     }
 
     // If no meaningful answer could be found a help response is send
