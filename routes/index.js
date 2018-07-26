@@ -24,6 +24,8 @@ const UPPER_BOUND_SCORE = 30;
 
 const LONG_ANSWER_BOUND = 100;
 
+const INTENT_FOLLOWUP_LIFESPAN = 2;
+
 /**
  * Maximum amount of cards to be shown in a carousel.
  * @type {number}
@@ -109,7 +111,8 @@ function getResponse(agent, question, body, goodFollowup = false) {
     let highestScoring = parsedBody.documents[0];
     if (!goodFollowup && highestScoring.hasOwnProperty("score") && highestScoring.score > UPPER_BOUND_SCORE) {
         // We got a good anwser so we set the appropriate context
-        agent.setContext({"name": GOOD_ANSWER_KEY, "lifespan": 1, "parameters": {"question": question}}); // TODO lifespan 2 but clear when matched
+        agent.setContext({"name": GOOD_ANSWER_KEY, "lifespan": INTENT_FOLLOWUP_LIFESPAN, "parameters": {"question": question}});
+        agent.clearContext(GOOD_ANSWER_KEY);
         // Make a short response
         fulfillmentText = getShortResponse(
             highestScoring,
@@ -120,8 +123,8 @@ function getResponse(agent, question, body, goodFollowup = false) {
         // If no high scoring document was found we send a set of documents, scoring higher than LOWER_BOUND_SCORE.
         cards = getCardResponse(parsedBody.documents, paragraphs);
         if (cards.length > 0) {
-            agent.setContext({"name": MODERATE_ANSWER_KEY, "lifespan": 1, "parameters": {}});
-            agent.setContext({"name": QUERY_FOLLOWUP_KEY, "lifespan": 1, "parameters": {}});
+            agent.setContext({"name": MODERATE_ANSWER_KEY, "lifespan": INTENT_FOLLOWUP_LIFESPAN, "parameters": {}});
+            agent.setContext({"name": QUERY_FOLLOWUP_KEY, "lifespan": INTENT_FOLLOWUP_LIFESPAN, "parameters": {}});
         }
     }
 
