@@ -168,12 +168,15 @@ function sendErrorResponse(agent) {
     agent.requestSource = agent.FACEBOOK;
     agent.add(new Payload(agent.FACEBOOK, {
         text: `${text}`,
-        quick_replies: [
-            {
-                content_type: "email",
-                title: responses.help.email
-            }
-        ]
+        payload: {
+            buttons: [
+                {
+                    content_type: "web_url", // TODO, email type, or mailto: url
+                    title: responses.help.email,
+                    url: `mailto:${responses.help.email}`
+                }
+            ]
+        }
     }));
 }
 
@@ -184,12 +187,15 @@ function sendHelpResponse(agent, long = false) {
     agent.requestSource = agent.FACEBOOK;
     agent.add(new Payload(agent.FACEBOOK, {
         text: `${text}`,
-        quick_replies: [
-            {
-                content_type: "email",
-                title: responses.help.email
-            }
-        ]
+        payload: {
+            buttons: [
+                {
+                    content_type: "web_url", // TODO
+                    title: responses.help.email,
+                    url: `mailto:${responses.help.email}`
+                }
+            ]
+        }
     }));
 }
 
