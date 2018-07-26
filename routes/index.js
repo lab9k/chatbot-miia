@@ -106,7 +106,7 @@ function getResponse(agent, question, body, goodFollowup=false) {
                 : null);
     } else {
         // If no high scoring document was found we send a set of documents, scoring higher than LOWER_BOUND_SCORE.
-        cards = getCardResponse(document, getParagraphs(document, paragraphs));
+        cards = getCardResponse(parsedBody.documents, paragraphs);
         agent.setContext({"name": MODERATE_ANSWER_KEY, "lifespan": 1, "parameters": {}});
     }
 
