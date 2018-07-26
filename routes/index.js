@@ -56,29 +56,33 @@ router.post("/", function (req, res) {
 
     const agent = new WebhookClient({request: req, response: res});
 
-    // if (agent.getContext(GOOD_ANSWER_KEY) !== null) {
-    //     // TODO Catch answer from user to the follow-up question
-    //     return;
-    // }
+    let intentMap = new Map();
 
-    miiaAPI.query(req.body.queryResult.queryText, (error, response, body) => {
-        let intentMap = new Map();
-
-        if (!error && response.statusCode === 200) {
-            intentMap.set("Default Fallback Intent", (agent) =>
-                getResponse(agent, req.body.queryResult.queryText, body));
-        } else {
-            intentMap.set("Default Fallback Intent", getErrorResponse);
-        }
-        intentMap.set("Good Answer Followup - no", (agent) =>
-            getResponse(agent, req.body.queryResult.queryText, body, true));
-
-        agent.handleRequest(intentMap);
-
+    intentMap.set("Default Fallback Intent", function (agent) {
+        return miiaAPI.query(agent.query)
+            .then(function (body) {
+                getResponse(agent, req.body.queryResult.queryText, body);
+            })
+            .catch(function () {
+                getErrorResponse(agent);
+            });
     });
+
+    intentMap.set("Good Answer Followup - no", function (agent) {
+        let question = agent.getContext(GOOD_ANSWER_KEY).parameters.question;
+        return miiaAPI.query(question)
+            .then(function (body) {
+                getResponse(agent, question, body, true);
+            })
+            .catch(function () {
+                getErrorResponse(agent);
+            });
+    });
+
+    agent.handleRequest(intentMap);
 });
 
-function getResponse(agent, question, body, goodFollowup=false) {
+function getResponse(agent, question, body, goodFollowup = false) {
     let parsedBody = JSON.parse(body);
     let paragraphs = (parsedBody.hasOwnProperty("paragraphs")) ? parsedBody.paragraphs : [];
 

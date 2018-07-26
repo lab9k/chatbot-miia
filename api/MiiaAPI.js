@@ -1,4 +1,4 @@
-const request = require("request");
+const request = require("request-promise");
 
 /**
  * Wrapper klasse voor Miia Rest API
@@ -11,9 +11,9 @@ class MiiaAPI {
         this.docType = docType;
     }
 
-    query(query, callback) {
-        request({
-            url: `${this.baseURL}/v1/query`,
+    query(query) {
+        return request({
+            uri: `${this.baseURL}/v1/query`,
             method: "POST",
             headers: {
                 "Accept": "application/json",
@@ -27,7 +27,7 @@ class MiiaAPI {
                 user: this.username,
                 pass: this.password
             }
-        }, callback);
+        });
     }
 }
 
