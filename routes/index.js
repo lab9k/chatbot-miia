@@ -38,13 +38,13 @@ const MAX_DESCRIPTION_LENGTH = 255;
  * The name for the follow-up context of a good answer
  * @type {string}
  */
-const GOOD_ANSWER_KEY = "GoodAnswer";
+const GOOD_ANSWER_KEY = "goodanswer";
 
 /**
  * The name for the follow-up context of a moderate answer
  * @type {string}
  */
-const MODERATE_ANSWER_KEY = "ModerateAnswer";
+const MODERATE_ANSWER_KEY = "moderateanswer";
 
 /**
  * Routes HTTP POST requests to index. It catches all fulfillment's from Dialogflow.
