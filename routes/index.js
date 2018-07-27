@@ -168,42 +168,26 @@ function sendResponse(agent, question, body, goodanswer = false) {
 
 function sendErrorResponse(agent) {
     let text = responses.error.nl[Math.floor(Math.random() * responses.error.nl.length)];
-    sendFacebookURLButtonResponse(agent, text, responses.contact.contact.nl, `mailto:${responses.contact.email}`);
+    sendContactResponse(agent, text);
 }
 
 function sendHelpResponse(agent, long = false) {
     let text = (long)
         ? responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)]
         : responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)];
-    sendFacebookURLButtonResponse(agent, text, responses.contact.contact.nl, `mailto:${responses.contact.email}`);
+    sendContactResponse(agent, text);
 }
 
 /**
- * Send a facebook
+ * Sends a text message followed by contact information
  *
  * @param {WebhookClient} agent
  * @param {string} message
- *  normal text message to be send before the button
- * @param {string} title
- *  the text of the button
- * @param {string} url
- *  the url of the button
+ *  normal text message to be send before the contact information
  */
-function sendFacebookURLButtonResponse(agent, message, title, url) {
-    // TODO check if message isn't null
-    agent.requestSource = agent.FACEBOOK;
-    agent.add(new Payload(agent.FACEBOOK, {
-        text: `${message}`,
-        // payload: {
-        buttons: [
-            {
-                content_type: "web_url",
-                title: title,
-                url: url
-            }
-        ]
-        // }
-    }));
+function sendContactResponse(agent, message) {
+    agent.add(message);
+    agent.add(`Mail infopunt: ${responses.email}`);
 }
 
 /**

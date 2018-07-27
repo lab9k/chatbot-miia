@@ -1,4 +1,5 @@
 {
+    "email": "gentinfo@stad.gent",
     "error": {
         "nl": [
             "Er ging iets mis. Ik kon niets vinden.",
@@ -19,12 +20,6 @@
             "Ik heb niets gevonden. Kan u de vraag herhalen? (Tip: hou uw vraag zo kort mogelijk)",
             "Ik heb geen antwoord gevonden. Kan u de vraag herhalen? (Tip: gebruik daarbij vooral synoniemen voor kernwoorden)"
         ]
-    },
-    "contact": {
-        "email": "gentinfo@stad.gent",
-        "contact": {
-            "nl": "Iemand spreken"
-        }
     },
     "query_followup": {
         "nl": [
