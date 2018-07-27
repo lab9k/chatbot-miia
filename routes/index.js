@@ -57,6 +57,34 @@ const GOOD_ANSWER_KEY = "goodanswer";
 const MODERATE_ANSWER_KEY = "moderateanswer";
 
 /**
+ * Map that maps intent names to handlers
+ * @type {Map<string, function>}
+ */
+const intentMap = new Map();
+intentMap.set("Query Intent", (agent) => {
+    console.log("query intent");
+    return cityNetAPI.query(agent.query)
+        .then(function (body) {
+            sendResponse(agent, req.body.queryResult.queryText, body);
+        })
+        .catch(function () {
+            agent.add(getErrorResponse());
+        });
+});
+intentMap.set("Good Answer Followup - no", (agent) => {
+    console.log("good followup");
+    let question = agent.getContext(GOOD_ANSWER_KEY).parameters.question;
+    agent.clearContext(GOOD_ANSWER_KEY);
+    return cityNetAPI.query(question)
+        .then(function (body) {
+            sendResponse(agent, question, body, true);
+        })
+        .catch(function () {
+            agent.add(getErrorResponse());
+        });
+});
+
+/**
  * Routes HTTP POST requests to index. It catches all fulfillment's from Dialogflow.
  */
 router.post("/", function (req, res) {
@@ -65,32 +93,6 @@ router.post("/", function (req, res) {
     }
 
     const agent = new WebhookClient({request: req, response: res});
-
-    let intentMap = new Map();
-
-    intentMap.set("Query Intent", function (agent) {
-        console.log("query intent");
-        return cityNetAPI.query(agent.query)
-            .then(function (body) {
-                sendResponse(agent, req.body.queryResult.queryText, body);
-            })
-            .catch(function () {
-                agent.add(getErrorResponse());
-            });
-    });
-
-    intentMap.set("Good Answer Followup - no", function (agent) {
-        console.log("good followup");
-        let question = agent.getContext(GOOD_ANSWER_KEY).parameters.question;
-        agent.clearContext(GOOD_ANSWER_KEY);
-        return cityNetAPI.query(question)
-            .then(function (body) {
-                sendResponse(agent, question, body, true);
-            })
-            .catch(function () {
-                agent.add(getErrorResponse());
-            });
-    });
 
     agent.handleRequest(intentMap).catch();
 });
