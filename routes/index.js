@@ -20,7 +20,7 @@ const LOWER_BOUND_SCORE = 5;
  * Documents with a score above UPPER_BOUND_SCORE are deemed likely to be a hit.
  * @type {number}
  */
-const UPPER_BOUND_SCORE = 30;
+const UPPER_BOUND_SCORE = 45;
 
 const LONG_ANSWER_BOUND = 100;
 
