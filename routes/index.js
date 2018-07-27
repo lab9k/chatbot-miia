@@ -62,7 +62,6 @@ const MODERATE_ANSWER_KEY = "moderateanswer";
  */
 const intentMap = new Map();
 intentMap.set("Query Intent", (agent) => {
-    console.log("query intent");
     return cityNetAPI.query(agent.query)
         .then(function (body) {
             sendResponse(agent, agent.query, body);
