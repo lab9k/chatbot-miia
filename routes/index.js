@@ -65,14 +65,13 @@ intentMap.set("Query Intent", (agent) => {
     console.log("query intent");
     return cityNetAPI.query(agent.query)
         .then(function (body) {
-            sendResponse(agent, req.body.queryResult.queryText, body);
+            sendResponse(agent, agent.query, body);
         })
         .catch(function () {
-            agent.add(getErrorResponse());
+            sendErrorResponse(agent);
         });
 });
 intentMap.set("Good Answer Followup - no", (agent) => {
-    console.log("good followup");
     let question = agent.getContext(GOOD_ANSWER_KEY).parameters.question;
     agent.clearContext(GOOD_ANSWER_KEY);
     return cityNetAPI.query(question)
@@ -80,7 +79,7 @@ intentMap.set("Good Answer Followup - no", (agent) => {
             sendResponse(agent, question, body, true);
         })
         .catch(function () {
-            agent.add(getErrorResponse());
+            sendErrorResponse(agent);
         });
 });
 
@@ -93,7 +92,6 @@ router.post("/", function (req, res) {
     }
 
     const agent = new WebhookClient({request: req, response: res});
-
     agent.handleRequest(intentMap).catch();
 });
 
@@ -108,7 +106,7 @@ router.post("/", function (req, res) {
  * @param {Boolean} goodanswer
  *  Boolean to express if the goodanswer context is present or not
  */
-function sendResponse(agent, question, body, goodanswer = false) { // TODO refactor
+function sendResponse(agent, question, body, goodanswer = false) {
     let parsedBody = JSON.parse(body);
     let paragraphs = (parsedBody.hasOwnProperty("paragraphs")) ? parsedBody.paragraphs : [];
 
@@ -119,7 +117,7 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
     if (!parsedBody.hasOwnProperty("documents")
         || parsedBody.documents === null
         || parsedBody.documents.length <= 0) {
-        agent.add(getHelpResponse(question.length >= LONG_ANSWER_BOUND));
+        sendHelpResponse(agent, question.length >= LONG_ANSWER_BOUND);
         return;
     }
 
@@ -151,7 +149,7 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
 
     // If no meaningful answer could be found a help response is send
     if (fulfillmentText === null && cards.length <= 0) {
-        agent.add(getHelpResponse(question.length >= LONG_ANSWER_BOUND));
+        sendHelpResponse(agent, question.length >= LONG_ANSWER_BOUND);
         return;
     }
 
@@ -167,6 +165,19 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
 
     // Send follow-up question
     agent.add(responses.query_followup.nl[Math.floor(Math.random() * responses.query_followup.nl.length)]);
+}
+
+function sendErrorResponse(agent) {
+    agent.add(responses.error.nl[Math.floor(Math.random() * responses.error.nl.length)]);
+}
+
+function sendHelpResponse(agent, long = false) {
+    if (long) {
+        // Send a special help response for long questions
+        agent.add(responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)]);
+    } else {
+        agent.add(responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)]);
+    }
 }
 
 /**
@@ -224,19 +235,6 @@ function getCardResponse(documents, paragraphs) {
         i++;
     }
     return cards;
-}
-
-function getErrorResponse() {
-    return responses.error.nl[Math.floor(Math.random() * responses.error.nl.length)];
-}
-
-function getHelpResponse(long = false) {
-    if (long) {
-        // Send a special help response for long questions
-        return responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)];
-    } else {
-        return responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)];
-    }
 }
 
 
