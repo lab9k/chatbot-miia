@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {WebhookClient, Card} = require("dialogflow-fulfillment");
+const {WebhookClient, Card, Payload} = require("dialogflow-fulfillment");
 const CityNetAPI = require("../api/CityNetAPI");
 const responses = require("../res/responses");
 const cityNetAPI = new CityNetAPI(
@@ -167,16 +167,27 @@ function sendResponse(agent, question, body, goodanswer = false) {
 }
 
 function sendErrorResponse(agent) {
-    agent.add(responses.error.nl[Math.floor(Math.random() * responses.error.nl.length)]);
+    let text = responses.error.nl[Math.floor(Math.random() * responses.error.nl.length)];
+    sendContactResponse(agent, text);
 }
 
 function sendHelpResponse(agent, long = false) {
-    if (long) {
-        // Send a special help response for long questions
-        agent.add(responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)]);
-    } else {
-        agent.add(responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)]);
-    }
+    let text = (long)
+        ? responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)]
+        : responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)];
+    sendContactResponse(agent, text);
+}
+
+/**
+ * Sends a text message followed by contact information
+ *
+ * @param {WebhookClient} agent
+ * @param {string} message
+ *  normal text message to be send before the contact information
+ */
+function sendContactResponse(agent, message) {
+    agent.add(message);
+    agent.add(`Mail infopunt: ${responses.email}`);
 }
 
 /**
