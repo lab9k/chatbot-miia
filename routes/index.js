@@ -24,7 +24,7 @@ const UPPER_BOUND_SCORE = 30;
 
 const LONG_ANSWER_BOUND = 100;
 
-const INTENT_FOLLOWUP_LIFESPAN = 2;
+const INTENT_FOLLOWUP_LIFESPAN = 1;
 
 /**
  * Maximum amount of cards to be shown in a carousel.
@@ -36,7 +36,7 @@ const MAX_CARD_AMOUNT = 10;
  * Maximum amount of characters of the description of a document which may be shown in a single response message.
  * @type {number}
  */
-const MAX_DESCRIPTION_LENGTH = 255;
+const MAX_DESCRIPTION_LENGTH = 512;
 
 /**
  * The name for the follow-up context of the default query intent
@@ -69,6 +69,7 @@ router.post("/", function (req, res) {
     let intentMap = new Map();
 
     intentMap.set("Query Intent", function (agent) {
+        console.log("query intent");
         return cityNetAPI.query(agent.query)
             .then(function (body) {
                 sendResponse(agent, req.body.queryResult.queryText, body);
@@ -79,7 +80,9 @@ router.post("/", function (req, res) {
     });
 
     intentMap.set("Good Answer Followup - no", function (agent) {
+        console.log("good followup");
         let question = agent.getContext(GOOD_ANSWER_KEY).parameters.question;
+        agent.clearContext(GOOD_ANSWER_KEY);
         return cityNetAPI.query(question)
             .then(function (body) {
                 sendResponse(agent, question, body, true);
@@ -129,7 +132,6 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
             lifespan: INTENT_FOLLOWUP_LIFESPAN,
             parameters: {question: question}
         });
-        agent.clearContext(GOOD_ANSWER_KEY);
         // Make a short response
         fulfillmentText = getShortResponse(
             highestScoring,
@@ -212,7 +214,7 @@ function getCardResponse(documents, paragraphs) {
     let j = 0; // Card count (max 10 cards)
     while (i < documents.length && j < MAX_CARD_AMOUNT) {
         let document = documents[i];
-        let card = getCard(document, paragraphs);
+        let card = getCard(document, getParagraphs(document, paragraphs));
         if (card !== null && document.hasOwnProperty("score") && document.score > LOWER_BOUND_SCORE) {
             cards.push(card);
             j++;
