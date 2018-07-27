@@ -194,15 +194,15 @@ function sendFacebookURLButtonResponse(agent, message, title, url) {
     agent.requestSource = agent.FACEBOOK;
     agent.add(new Payload(agent.FACEBOOK, {
         text: `${message}`,
-        payload: {
-            buttons: [
-                {
-                    content_type: "web_url",
-                    title: title,
-                    url: url
-                }
-            ]
-        }
+        // payload: {
+        buttons: [
+            {
+                content_type: "web_url",
+                title: title,
+                url: url
+            }
+        ]
+        // }
     }));
 }
 
