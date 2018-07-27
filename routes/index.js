@@ -24,7 +24,7 @@ const UPPER_BOUND_SCORE = 30;
 
 const LONG_ANSWER_BOUND = 100;
 
-const INTENT_FOLLOWUP_LIFESPAN = 2;
+const INTENT_FOLLOWUP_LIFESPAN = 1;
 
 /**
  * Maximum amount of cards to be shown in a carousel.
@@ -69,6 +69,7 @@ router.post("/", function (req, res) {
     let intentMap = new Map();
 
     intentMap.set("Query Intent", function (agent) {
+        console.log("query intent");
         return cityNetAPI.query(agent.query)
             .then(function (body) {
                 sendResponse(agent, req.body.queryResult.queryText, body);
@@ -79,6 +80,7 @@ router.post("/", function (req, res) {
     });
 
     intentMap.set("Good Answer Followup - no", function (agent) {
+        console.log("good followup");
         let question = agent.getContext(GOOD_ANSWER_KEY).parameters.question;
         agent.clearContext(GOOD_ANSWER_KEY);
         return cityNetAPI.query(question)
