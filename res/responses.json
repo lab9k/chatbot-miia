@@ -1,35 +1,35 @@
 {
-  "error": {
-    "nl": [
-      "Er ging iets mis. Ik kon niets vinden.",
-      "Sorry er liep iets fout."
-    ]
-  },
-  "help": {
-    "long": {
-      "nl": [
-        "Geen resultaten gevonden, kan u de vraag opnieuw stellen? (Tip: hou uw vraag zo kort mogelijk)",
-        "Ik vind geen relevante documenten. (Tip: Houdt uw vraag zo kort mogelijk dan heb ik misschien meer succes)"
-      ]
+    "error": {
+        "nl": [
+            "Er ging iets mis. Ik kon niets vinden.",
+            "Sorry er liep iets fout."
+        ]
     },
-    "nl": [
-      "Daar heb ik geen antwoord op. Kan u de vraag anders formuleren? (Tip: gebruik daarbij vooral synoniemen voor kernwoorden)",
-      "Daar heb ik geen antwoord op, kan u de vraag opnieuw stellen? (Tip: hou uw vraag zo kort mogelijk)",
-      "Ik heb niks gevonden. Als u enkele sleutelwoorden vervangt door synoniemen heb ik misschien meer succes.",
-      "Ik heb niets gevonden. Kan u de vraag herhalen? (Tip: hou uw vraag zo kort mogelijk)",
-      "Ik heb geen antwoord gevonden. Kan u de vraag herhalen? (Tip: gebruik daarbij vooral synoniemen voor kernwoorden)"
-    ]
-  },
-  "contact": {
-    "email": "gentinfo@stad.gent",
+    "help": {
+        "long": {
+            "nl": [
+                "Geen resultaten gevonden, kan u de vraag opnieuw stellen? (Tip: hou uw vraag zo kort mogelijk)",
+                "Ik vind geen relevante documenten. (Tip: Houdt uw vraag zo kort mogelijk dan heb ik misschien meer succes)"
+            ]
+        },
+        "nl": [
+            "Daar heb ik geen antwoord op. Kan u de vraag anders formuleren? (Tip: gebruik daarbij vooral synoniemen voor kernwoorden)",
+            "Daar heb ik geen antwoord op, kan u de vraag opnieuw stellen? (Tip: hou uw vraag zo kort mogelijk)",
+            "Ik heb niks gevonden. Als u enkele sleutelwoorden vervangt door synoniemen heb ik misschien meer succes.",
+            "Ik heb niets gevonden. Kan u de vraag herhalen? (Tip: hou uw vraag zo kort mogelijk)",
+            "Ik heb geen antwoord gevonden. Kan u de vraag herhalen? (Tip: gebruik daarbij vooral synoniemen voor kernwoorden)"
+        ]
+    },
     "contact": {
-      "nl": "Iemand spreken"
+        "email": "gentinfo@stad.gent",
+        "contact": {
+            "nl": "Iemand spreken"
+        }
+    },
+    "query_followup": {
+        "nl": [
+            "Heeft dit uw vraag beantwoord?",
+            "Is dit het antwoord dat u zocht?"
+        ]
     }
-  },
-  "query_followup": {
-    "nl": [
-      "Heeft dit uw vraag beantwoord?",
-      "Is dit het antwoord dat u zocht?"
-    ]
-  }
 }

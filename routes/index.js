@@ -24,7 +24,7 @@ const UPPER_BOUND_SCORE = 30;
 
 const LONG_ANSWER_BOUND = 100;
 
-const INTENT_FOLLOWUP_LIFESPAN = 2;
+const INTENT_FOLLOWUP_LIFESPAN = 1;
 
 /**
  * Maximum amount of cards to be shown in a carousel.
@@ -36,7 +36,7 @@ const MAX_CARD_AMOUNT = 10;
  * Maximum amount of characters of the description of a document which may be shown in a single response message.
  * @type {number}
  */
-const MAX_DESCRIPTION_LENGTH = 255;
+const MAX_DESCRIPTION_LENGTH = 512;
 
 /**
  * The name for the follow-up context of the default query intent
@@ -57,6 +57,32 @@ const GOOD_ANSWER_KEY = "goodanswer";
 const MODERATE_ANSWER_KEY = "moderateanswer";
 
 /**
+ * Map that maps intent names to handlers
+ * @type {Map<string, function>}
+ */
+const intentMap = new Map();
+intentMap.set("Query Intent", (agent) => {
+    return cityNetAPI.query(agent.query)
+        .then(function (body) {
+            sendResponse(agent, agent.query, body);
+        })
+        .catch(function () {
+            sendErrorResponse(agent);
+        });
+});
+intentMap.set("Good Answer Followup - no", (agent) => {
+    let question = agent.getContext(GOOD_ANSWER_KEY).parameters.question;
+    agent.clearContext(GOOD_ANSWER_KEY);
+    return cityNetAPI.query(question)
+        .then(function (body) {
+            sendResponse(agent, question, body, true);
+        })
+        .catch(function () {
+            sendErrorResponse(agent);
+        });
+});
+
+/**
  * Routes HTTP POST requests to index. It catches all fulfillment's from Dialogflow.
  */
 router.post("/", function (req, res) {
@@ -65,31 +91,6 @@ router.post("/", function (req, res) {
     }
 
     const agent = new WebhookClient({request: req, response: res});
-
-    let intentMap = new Map();
-
-    intentMap.set("Query Intent", function (agent) {
-        return cityNetAPI.query(agent.query)
-            .then(function (body) {
-                sendResponse(agent, req.body.queryResult.queryText, body);
-            })
-            .catch(function () {
-                sendErrorResponse(agent);
-            });
-    });
-
-    intentMap.set("Good Answer Followup - no", function (agent) {
-        let question = agent.getContext(GOOD_ANSWER_KEY).parameters.question;
-        agent.clearContext(GOOD_ANSWER_KEY);
-        return cityNetAPI.query(question)
-            .then(function (body) {
-                sendResponse(agent, question, body, true);
-            })
-            .catch(function () {
-                sendErrorResponse(agent);
-            });
-    });
-
     agent.handleRequest(intentMap).catch();
 });
 
@@ -104,7 +105,7 @@ router.post("/", function (req, res) {
  * @param {Boolean} goodanswer
  *  Boolean to express if the goodanswer context is present or not
  */
-function sendResponse(agent, question, body, goodanswer = false) { // TODO refactor
+function sendResponse(agent, question, body, goodanswer = false) {
     let parsedBody = JSON.parse(body);
     let paragraphs = (parsedBody.hasOwnProperty("paragraphs")) ? parsedBody.paragraphs : [];
 
@@ -121,12 +122,14 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
 
     // Search for a meaningful answer
     let highestScoring = parsedBody.documents[0];
-    if (!goodanswer && highestScoring.hasOwnProperty("score") && highestScoring.score > UPPER_BOUND_SCORE) {
+    let pars = getParagraphs(highestScoring, paragraphs);
+    if ((!goodanswer && pars.length > 0 && pars[0].hasOwnProperty("score") && pars[0].score > UPPER_BOUND_SCORE)
+        || (!goodanswer && highestScoring.hasOwnProperty("score") && highestScoring.score > UPPER_BOUND_SCORE)) {
         // We got a good anwser so we set the appropriate context
         agent.setContext({
-            "name": GOOD_ANSWER_KEY,
-            "lifespan": INTENT_FOLLOWUP_LIFESPAN,
-            "parameters": {"question": question}
+            name: GOOD_ANSWER_KEY,
+            lifespan: INTENT_FOLLOWUP_LIFESPAN,
+            parameters: {question: question}
         });
         // Make a short response
         fulfillmentText = getShortResponse(
@@ -138,8 +141,8 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
         // If no high scoring document was found we send a set of documents, scoring higher than LOWER_BOUND_SCORE.
         cards = getCardResponse(parsedBody.documents, paragraphs);
         if (cards.length > 0) {
-            agent.setContext({"name": MODERATE_ANSWER_KEY, "lifespan": INTENT_FOLLOWUP_LIFESPAN, "parameters": {}});
-            agent.setContext({"name": QUERY_FOLLOWUP_KEY, "lifespan": INTENT_FOLLOWUP_LIFESPAN, "parameters": {}});
+            agent.setContext({name: MODERATE_ANSWER_KEY, lifespan: INTENT_FOLLOWUP_LIFESPAN, parameters: {}});
+            agent.setContext({name: QUERY_FOLLOWUP_KEY, lifespan: INTENT_FOLLOWUP_LIFESPAN, parameters: {}});
         }
     }
 
@@ -250,7 +253,7 @@ function getCardResponse(documents, paragraphs) {
     let j = 0; // Card count (max 10 cards)
     while (i < documents.length && j < MAX_CARD_AMOUNT) {
         let document = documents[i];
-        let card = getCard(document, paragraphs);
+        let card = getCard(document, getParagraphs(document, paragraphs));
         if (card !== null && document.hasOwnProperty("score") && document.score > LOWER_BOUND_SCORE) {
             cards.push(card);
             j++;
