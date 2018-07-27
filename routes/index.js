@@ -120,9 +120,15 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
 
     // Search for a meaningful answer
     let highestScoring = parsedBody.documents[0];
-    if (!goodanswer && highestScoring.hasOwnProperty("score") && highestScoring.score > UPPER_BOUND_SCORE) {
+    let pars = getParagraphs(highestScoring, paragraphs);
+    if ((!goodanswer && pars.length > 0 && pars[0].hasOwnProperty("score") && pars[0].score > UPPER_BOUND_SCORE)
+        || (!goodanswer && highestScoring.hasOwnProperty("score") && highestScoring.score > UPPER_BOUND_SCORE)) {
         // We got a good anwser so we set the appropriate context
-        agent.setContext({"name": GOOD_ANSWER_KEY, "lifespan": INTENT_FOLLOWUP_LIFESPAN, "parameters": {"question": question}});
+        agent.setContext({
+            name: GOOD_ANSWER_KEY,
+            lifespan: INTENT_FOLLOWUP_LIFESPAN,
+            parameters: {question: question}
+        });
         agent.clearContext(GOOD_ANSWER_KEY);
         // Make a short response
         fulfillmentText = getShortResponse(
@@ -134,8 +140,8 @@ function sendResponse(agent, question, body, goodanswer = false) { // TODO refac
         // If no high scoring document was found we send a set of documents, scoring higher than LOWER_BOUND_SCORE.
         cards = getCardResponse(parsedBody.documents, paragraphs);
         if (cards.length > 0) {
-            agent.setContext({"name": MODERATE_ANSWER_KEY, "lifespan": INTENT_FOLLOWUP_LIFESPAN, "parameters": {}});
-            agent.setContext({"name": QUERY_FOLLOWUP_KEY, "lifespan": INTENT_FOLLOWUP_LIFESPAN, "parameters": {}});
+            agent.setContext({name: MODERATE_ANSWER_KEY, lifespan: INTENT_FOLLOWUP_LIFESPAN, parameters: {}});
+            agent.setContext({name: QUERY_FOLLOWUP_KEY, lifespan: INTENT_FOLLOWUP_LIFESPAN, parameters: {}});
         }
     }
 
@@ -220,7 +226,7 @@ function getErrorResponse() {
     return responses.error.nl[Math.floor(Math.random() * responses.error.nl.length)];
 }
 
-function getHelpResponse(long=false) {
+function getHelpResponse(long = false) {
     if (long) {
         // Send a special help response for long questions
         return responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)];
