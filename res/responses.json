@@ -1,26 +1,30 @@
 {
   "error": {
     "nl": [
-      "Er ging iets mis. Ik kon niets vinden. U kan uw vraag ook mailen naar onderstaand e-mailadres.",
-      "Sorry er liep iets fout. U kan uw vraag ook mailen naar onderstaand e-mailadres."
+      "Er ging iets mis. Ik kon niets vinden.",
+      "Sorry er liep iets fout."
     ]
   },
   "help": {
-    "email": "gentinfo@stad.gent",
     "long": {
       "nl": [
-        "Geen resultaten gevonden, kan u de vraag opnieuw stellen? (Tip: hou uw vraag zo kort mogelijk) Als u nog steeds geen geluk hebt kan u uw vraag ook aan een echt persoon stellen via dit e-mailadres.",
-        "Ik vind geen relevante documenten. (Tip: Houdt uw vraag zo kort mogelijk dan heb ik misschien meer succes) Herformuleer uw vraag of stuur ze naar dit e-mailadres."
+        "Geen resultaten gevonden, kan u de vraag opnieuw stellen? (Tip: hou uw vraag zo kort mogelijk)",
+        "Ik vind geen relevante documenten. (Tip: Houdt uw vraag zo kort mogelijk dan heb ik misschien meer succes)"
       ]
     },
     "nl": [
-      "Daar heb ik geen antwoord op. Kan u de vraag anders formuleren? (Tip: gebruik daarbij vooral synoniemen voor kernwoorden)\nU kan uw vraag ook naar dit e-mailadres mailen.",
-      "Daar heb ik geen antwoord op, kan u de vraag opnieuw stellen? (Tip: gebruik daarbij vooral synoniemen voor kernwoorden)\nU kan uw vraag ook aan een echt persoon stellen via dit e-mailadres.",
-      "Ik heb niks gevonden. Als u enkele sleutelwoorden vervangt door synoniemen heb ik misschien meer succes.\nAls u nog steeds geen geluk hebt kan u uw vraag ook naar dit e-mailadres mailen.",
-      "Ik heb niets gevonden. Kan u de vraag herhalen? (Tip: hou uw vraag zo kort mogelijk)\nAls u nog steeds geen geluk hebt kan u uw vraag ook aan een echt persoon stellen via dit e-mailadres.",
-      "Ik vond niets. Als u wilt kan u mailen naar dit e-mailadres om door een echt persoon geholpen te worden.",
-      "Ik kon geen relevante documenten vinden. U kan uw vraag ook aan een echt persoon stellen via dit e-mailadres."
+      "Daar heb ik geen antwoord op. Kan u de vraag anders formuleren? (Tip: gebruik daarbij vooral synoniemen voor kernwoorden)",
+      "Daar heb ik geen antwoord op, kan u de vraag opnieuw stellen? (Tip: hou uw vraag zo kort mogelijk)",
+      "Ik heb niks gevonden. Als u enkele sleutelwoorden vervangt door synoniemen heb ik misschien meer succes.",
+      "Ik heb niets gevonden. Kan u de vraag herhalen? (Tip: hou uw vraag zo kort mogelijk)",
+      "Ik heb geen antwoord gevonden. Kan u de vraag herhalen? (Tip: gebruik daarbij vooral synoniemen voor kernwoorden)"
     ]
+  },
+  "contact": {
+    "email": "gentinfo@stad.gent",
+    "contact": {
+      "nl": "Iemand spreken"
+    }
   },
   "query_followup": {
     "nl": [
