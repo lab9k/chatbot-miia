@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const {WebhookClient, Card, Payload} = require("dialogflow-fulfillment");
+const {WebhookClient, Card} = require("dialogflow-fulfillment");
 const CityNetAPI = require("../api/CityNetAPI");
 const responses = require("../res/responses");
 const cityNetAPI = new CityNetAPI(
@@ -267,10 +267,11 @@ function getCard(document, paragraphs) {
 
     // Construct default card
     let card = new Card(getDescription(document) !== null ? getDescription(document) : "Geen beschrijving");
-    if (document.hasOwnProperty("publicationDate")) {
-        let date = new Date(document.publicationDate);
-        card.setText(`${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`);
-    }
+    let matchingConceptsString = (document.matchingConcepts === null) ? "" : document.matchingConcepts.join(", ");
+    let date = new Date(document.publicationDate);
+    let dateString = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+    let delimiter = (matchingConceptsString !== "" && dateString !== "") ? " - " : "";
+    card.setText(`${matchingConceptsString}${delimiter}${dateString}`);
     if (document.hasOwnProperty("docUri")) {
         card.setButton({
             text: "Bekijk het verslag",
