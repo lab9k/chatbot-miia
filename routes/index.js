@@ -36,7 +36,7 @@ const MAX_CARD_AMOUNT = 10;
  * Maximum amount of characters of the description of a document which may be shown in a single response message.
  * @type {number}
  */
-const MAX_DESCRIPTION_LENGTH = 255;
+const MAX_DESCRIPTION_LENGTH = 512;
 
 /**
  * The name for the follow-up context of the default query intent
