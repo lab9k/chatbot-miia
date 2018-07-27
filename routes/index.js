@@ -206,7 +206,7 @@ function getCardResponse(documents, paragraphs) {
     let j = 0; // Card count (max 10 cards)
     while (i < documents.length && j < MAX_CARD_AMOUNT) {
         let document = documents[i];
-        let card = getCard(document, paragraphs);
+        let card = getCard(document, getParagraphs(document, paragraphs));
         if (card !== null && document.hasOwnProperty("score") && document.score > LOWER_BOUND_SCORE) {
             cards.push(card);
             j++;
