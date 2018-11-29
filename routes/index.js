@@ -22,7 +22,7 @@ const LOWER_BOUND_SCORE = 5;
  * Documents with a score above UPPER_BOUND_SCORE are deemed likely to be a hit.
  * @type {number}
  */
-const UPPER_BOUND_SCORE = 45;
+const UPPER_BOUND_SCORE = 30;
 
 const LONG_ANSWER_BOUND = 100;
 
@@ -113,6 +113,7 @@ router.get('/', (req, res) => res.json({ success: true }));
  *  Boolean to express if the goodanswer context is present or not
  */
 function sendResponse(agent, question, body, goodanswer = false) {
+
   const parsedBody = JSON.parse(body);
   const paragraphs = parsedBody.paragraphs ? parsedBody.paragraphs : [];
 
@@ -179,6 +180,7 @@ function sendResponse(agent, question, body, goodanswer = false) {
     cards.forEach(card => agent.add(card));
   }
 
+
   // Send follow-up question
   agent.add(
     responses.query_followup.nl[Math.floor(Math.random() * responses.query_followup.nl.length)],
@@ -190,22 +192,20 @@ function sendErrorResponse(agent) {
 }
 
 function sendHelpResponse(agent, long = false) {
-    let text = (long)
-        ? responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)]
-        : responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)];
-    sendContactResponse(agent, text);
-}
-
-/**
- * Sends a text message followed by contact information
- *
- * @param {WebhookClient} agent
- * @param {string} message
- *  normal text message to be send before the contact information
- */
-function sendContactResponse(agent, message) {
-    agent.add(message);
-    agent.add(`Mail infopunt: ${responses.email}`);
+    if (long) {
+        // Send a special help response for long questions
+        agent.add(
+            responses.help.long.nl[
+                Math.floor(Math.random() * responses.help.long.nl.length)
+            ]
+        );
+    } else {
+        agent.add(
+            responses.help.nl[
+                Math.floor(Math.random() * responses.help.nl.length)
+            ]
+        );
+    }
 }
 
 /**
@@ -248,6 +248,7 @@ function getShortResponse(document, paragraph) {
  * @returns {Array} a list of cards
  */
 function getCardResponse(documents, paragraphs) {
+
   const cards = [];
   let i = 0; // Cursor
   let j = 0; // Card count (max 10 cards)
@@ -306,7 +307,6 @@ function getCard(document, paragraphs) {
       }
     }
   }
-
   return card;
 }
 
