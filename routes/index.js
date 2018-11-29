@@ -22,7 +22,7 @@ const LOWER_BOUND_SCORE = 5;
  * Documents with a score above UPPER_BOUND_SCORE are deemed likely to be a hit.
  * @type {number}
  */
-const UPPER_BOUND_SCORE = 30;
+const UPPER_BOUND_SCORE = 45;
 
 const LONG_ANSWER_BOUND = 100;
 
@@ -190,12 +190,22 @@ function sendErrorResponse(agent) {
 }
 
 function sendHelpResponse(agent, long = false) {
-  if (long) {
-    // Send a special help response for long questions
-    agent.add(responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)]);
-  } else {
-    agent.add(responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)]);
-  }
+    let text = (long)
+        ? responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)]
+        : responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)];
+    sendContactResponse(agent, text);
+}
+
+/**
+ * Sends a text message followed by contact information
+ *
+ * @param {WebhookClient} agent
+ * @param {string} message
+ *  normal text message to be send before the contact information
+ */
+function sendContactResponse(agent, message) {
+    agent.add(message);
+    agent.add(`Mail infopunt: ${responses.email}`);
 }
 
 /**
