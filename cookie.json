@@ -1,0 +1,43 @@
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9_eyJpZCI6IjViZWU4NThkOTQ4OGI4MDA0ODg5MmE3NSIsImlhdCI6MTU0MzIyNDY3OH0_t2-0taKkbOL6hKGLWpMIUoR5w7jwgakVQHHLio40Nrg",
+  "user": {
+    "id": "5bee858d9488b80048892a75",
+    "status": true,
+    "role": "manager",
+    "email": "hans_fraiponts@digipolis_gent",
+    "createdAt": "2018-11-16T08:53:33_398Z"
+  },
+  "manager": {
+    "id": "5bee858d9488b80048892a76",
+    "firstName": "Hans",
+    "lastName": "Fraiponts",
+    "position": "Business_Analyst_Digipolis",
+    "city": "5be887effc24ee006f75efe6",
+    "phone": "0476870515"
+  },
+  "city": {
+    "id": "5be887effc24ee006f75efe6",
+    "name": "GENT",
+    "tenantId": "MIIAL-GENTN4G6",
+    "ccard": {
+      "country": "Belgium",
+      "oldCC": null,
+      "ccAddress": "Gent",
+      "ccZip": "1234",
+      "ccNumber": "4****1111",
+      "ccFirstName": "Stephen",
+      "ccLastName": "Lernout",
+      "ccVc": "123",
+      "ccNotes": "TEST1234",
+      "ccMonth": 12,
+      "ccYear": 2021,
+      "city": "5be887effc24ee006f75efe6",
+      "createdAt": "2018-11-11T19:51:50_146Z",
+      "updatedAt": "2018-11-11T19:51:50_146Z",
+      "__v": 0,
+      "id": "5be88856fc24ee006f75efe8"
+    },
+    "ccAddress": "Gent",
+    "ccZip": "1234"
+  }
+}
