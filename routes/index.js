@@ -113,7 +113,6 @@ router.get('/', (req, res) => res.json({ success: true }));
  *  Boolean to express if the goodanswer context is present or not
  */
 function sendResponse(agent, question, body, goodanswer = false) {
-
   const parsedBody = JSON.parse(body);
   const paragraphs = parsedBody.paragraphs ? parsedBody.paragraphs : [];
 
@@ -180,7 +179,6 @@ function sendResponse(agent, question, body, goodanswer = false) {
     cards.forEach(card => agent.add(card));
   }
 
-
   // Send follow-up question
   agent.add(
     responses.query_followup.nl[Math.floor(Math.random() * responses.query_followup.nl.length)],
@@ -192,20 +190,12 @@ function sendErrorResponse(agent) {
 }
 
 function sendHelpResponse(agent, long = false) {
-    if (long) {
-        // Send a special help response for long questions
-        agent.add(
-            responses.help.long.nl[
-                Math.floor(Math.random() * responses.help.long.nl.length)
-            ]
-        );
-    } else {
-        agent.add(
-            responses.help.nl[
-                Math.floor(Math.random() * responses.help.nl.length)
-            ]
-        );
-    }
+  if (long) {
+    // Send a special help response for long questions
+    agent.add(responses.help.long.nl[Math.floor(Math.random() * responses.help.long.nl.length)]);
+  } else {
+    agent.add(responses.help.nl[Math.floor(Math.random() * responses.help.nl.length)]);
+  }
 }
 
 /**
@@ -248,7 +238,6 @@ function getShortResponse(document, paragraph) {
  * @returns {Array} a list of cards
  */
 function getCardResponse(documents, paragraphs) {
-
   const cards = [];
   let i = 0; // Cursor
   let j = 0; // Card count (max 10 cards)
