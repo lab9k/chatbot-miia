@@ -14,6 +14,9 @@ app.use(morgan(env === 'development' ? 'dev' : 'combined'));
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
+app.use((req) => {
+  console.log(JSON.stringify(req.body));
+});
 app.use('/', index);
 
 module.exports = app;
