@@ -14,7 +14,10 @@ class CityNetAPI {
   }
 
   query(query) {
-    log.log(JSON.stringify({ query }));
+    log.log({
+      level: 'info',
+      message: JSON.stringify(query),
+    });
     return request({
       uri: `${this.baseURL}/v1/query`,
       method: 'POST',
