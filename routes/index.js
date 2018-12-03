@@ -99,8 +99,6 @@ router.post('/', (req, res) => {
   agent.handleRequest(intentMap).catch();
 });
 
-router.get('/', (req, res) => res.json({ success: true }));
-
 /**
  * Given a CityNetAPI response, construct a response and add them to the WebhookClient.
  *
