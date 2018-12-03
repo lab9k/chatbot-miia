@@ -1,0 +1,44 @@
+{
+  "responseId": "cb32438d-285c-4a63-a311-4f2dd86dccf6",
+  "queryResult": {
+    "queryText": "wat is het gemeenteraadsbesluit van vorige week?",
+    "action": "query",
+    "parameters": {},
+    "allRequiredParamsPresent": true,
+    "outputContexts": [
+      {
+        "name": "projects/citynet-43d73/agent/sessions/8425f1f3-7e60-4912-9452-27ebdccd77e9/contexts/queryintent-followup",
+        "lifespanCount": 1
+      },
+      {
+        "name": "projects/citynet-43d73/agent/sessions/8425f1f3-7e60-4912-9452-27ebdccd77e9/contexts/generic",
+        "lifespanCount": 4,
+        "parameters": { "facebook_sender_id": "2091896337499293" }
+      }
+    ],
+    "intent": {
+      "name": "projects/citynet-43d73/agent/intents/b8cf539f-495e-4a15-9c95-ba2504f8421a",
+      "displayName": "Query Intent",
+      "isFallback": true
+    },
+    "intentDetectionConfidence": 1,
+    "languageCode": "nl"
+  },
+  "originalDetectIntentRequest": {
+    "source": "facebook",
+    "payload": {
+      "data": {
+        "sender": { "id": "2091896337499293" },
+        "recipient": { "id": "274843603079699" },
+        "message": {
+          "mid": "mclP9Jx_v5IYt7lV5YSJKf2VZUsyNjpR7IZ7sfH-tvXnIHKmKejm31Tt4AwZbwcV94nafCjGshYwT9-IkPeDPA",
+          "text": "wat is het gemeenteraadsbesluit van vorige week?",
+          "seq": 441849
+        },
+        "timestamp": 1543839376575
+      },
+      "source": "facebook"
+    }
+  },
+  "session": "projects/citynet-43d73/agent/sessions/8425f1f3-7e60-4912-9452-27ebdccd77e9"
+}
