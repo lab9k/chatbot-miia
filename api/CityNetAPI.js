@@ -1,4 +1,5 @@
 const request = require('request-promise');
+const log = require('../util/logger')(__filename.split('/').pop());
 
 /**
  * Wrapper klasse voor CityNet Rest API
@@ -13,6 +14,7 @@ class CityNetAPI {
   }
 
   query(query) {
+    log.debug(JSON.stringify({ query }));
     return request({
       uri: `${this.baseURL}/v1/query`,
       method: 'POST',
